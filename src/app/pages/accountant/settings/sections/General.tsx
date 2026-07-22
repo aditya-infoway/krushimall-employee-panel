@@ -29,36 +29,36 @@ const id = user?.id;
   const [error, setError] = useState<string | null>(null);
 
   // Location states
-  const [country, setCountry] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [district, setDistrict] = useState("");
-  const [stateCode, setStateCode] = useState("");
+  // const [country, setCountry] = useState("");
+  // const [state, setState] = useState("");
+  // const [city, setCity] = useState("");
+  // const [district, setDistrict] = useState("");
+  // const [stateCode, setStateCode] = useState("");
 
-  // Country/State/City options
-  const countryOptions = useMemo(() => {
-    return Country.getAllCountries().map((country) => ({
-      value: country.isoCode,
-      label: country.name,
-    }));
-  }, []);
+  // // Country/State/City options
+  // const countryOptions = useMemo(() => {
+  //   return Country.getAllCountries().map((country) => ({
+  //     value: country.isoCode,
+  //     label: country.name,
+  //   }));
+  // }, []);
 
-  const stateOptions = useMemo(() => {
-    if (!country) return [];
-    return State.getStatesOfCountry(country).map((state) => ({
-      value: state.isoCode,
-      label: state.name,
-      state,
-    }));
-  }, [country]);
+  // const stateOptions = useMemo(() => {
+  //   if (!country) return [];
+  //   return State.getStatesOfCountry(country).map((state) => ({
+  //     value: state.isoCode,
+  //     label: state.name,
+  //     state,
+  //   }));
+  // }, [country]);
 
-  const cityOptions = useMemo(() => {
-    if (!country || !state) return [];
-    return City.getCitiesOfState(country, state).map((city) => ({
-      value: city.name,
-      label: city.name,
-    }));
-  }, [country, state]);
+  // const cityOptions = useMemo(() => {
+  //   if (!country || !state) return [];
+  //   return City.getCitiesOfState(country, state).map((city) => ({
+  //     value: city.name,
+  //     label: city.name,
+  //   }));
+  // }, [country, state]);
 const [employee, setEmployee] = useState<any>(null);
 const fetchEmployee = async () => {
   try {
@@ -83,175 +83,175 @@ const fetchEmployee = async () => {
   }
 }, [id]);
 
-  const handleSave = async () => {
-    try {
-      const formData = new FormData();
+  // const handleSave = async () => {
+  //   try {
+  //     const formData = new FormData();
 
-      // Append all branch fields (skip nested objects / handled separately)
-      Object.keys(branch).forEach((key) => {
-        if (
-          key === "manager" ||
-          key === "managerId" ||
-          key === "company" ||
-          key === "financialYear" ||
-          key === "createdAt" ||
-          key === "updatedAt"
-        )
-          return;
-        if (branch[key] !== undefined && branch[key] !== null) {
-          formData.append(key, String(branch[key]));
-        }
-      });
+  //     // Append all branch fields (skip nested objects / handled separately)
+  //     Object.keys(branch).forEach((key) => {
+  //       if (
+  //         key === "manager" ||
+  //         key === "managerId" ||
+  //         key === "company" ||
+  //         key === "financialYear" ||
+  //         key === "createdAt" ||
+  //         key === "updatedAt"
+  //       )
+  //         return;
+  //       if (branch[key] !== undefined && branch[key] !== null) {
+  //         formData.append(key, String(branch[key]));
+  //       }
+  //     });
 
-      // Manager id sent exactly once
-      const managerId = branch.manager?.id ?? branch.managerId;
-      if (managerId) {
-        formData.append("managerId", String(managerId));
-      }
-      if (avatar) {
-        formData.append("logo", avatar);
-      }
+  //     // Manager id sent exactly once
+  //     const managerId = branch.manager?.id ?? branch.managerId;
+  //     if (managerId) {
+  //       formData.append("managerId", String(managerId));
+  //     }
+  //     if (avatar) {
+  //       formData.append("logo", avatar);
+  //     }
 
-      await apiHelper.put(`/branch/${branch.id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+  //     await apiHelper.put(`/branch/${branch.id}`, formData, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     });
 
-      setIsEditing(false);
-      setAvatar(null);
-      await fetchBranch();
-      toast.success("Branch updated successfully");
-    } catch (error: any) {
-      console.log("Status:", error.response?.status);
-      console.log("Response:", error.response?.data);
-      console.log("Error:", error);
+  //     setIsEditing(false);
+  //     setAvatar(null);
+  //     await fetchBranch();
+  //     toast.success("Branch updated successfully");
+  //   } catch (error: any) {
+  //     console.log("Status:", error.response?.status);
+  //     console.log("Response:", error.response?.data);
+  //     console.log("Error:", error);
 
-      toast.error(error.response?.data?.message || "Failed to update branch");
-    }
-  };
+  //     toast.error(error.response?.data?.message || "Failed to update branch");
+  //   }
+  // };
 
-  const isDark = () => {
-    if (typeof document === "undefined") return false;
-    return document.documentElement.classList.contains("dark");
-  };
+  // const isDark = () => {
+  //   if (typeof document === "undefined") return false;
+  //   return document.documentElement.classList.contains("dark");
+  // };
 
-  const customSelectStyles = {
-    control: (provided: any, state: any) => ({
-      ...provided,
-      backgroundColor: "transparent",
-      borderColor: state.isFocused
-        ? "var(--color-primary-600)"
-        : isDark()
-          ? "var(--color-dark-450)"
-          : "var(--color-gray-300)",
-      boxShadow: state.isFocused
-        ? "0 0 0 1px var(--color-primary-600)"
-        : "none",
-      minHeight: "42px",
-      opacity: 1,
-      "&:hover": {
-        borderColor: state.isFocused
-          ? "var(--color-primary-600)"
-          : isDark()
-            ? "var(--color-dark-400)"
-            : "var(--color-gray-400)",
-      },
-    }),
+  // const customSelectStyles = {
+  //   control: (provided: any, state: any) => ({
+  //     ...provided,
+  //     backgroundColor: "transparent",
+  //     borderColor: state.isFocused
+  //       ? "var(--color-primary-600)"
+  //       : isDark()
+  //         ? "var(--color-dark-450)"
+  //         : "var(--color-gray-300)",
+  //     boxShadow: state.isFocused
+  //       ? "0 0 0 1px var(--color-primary-600)"
+  //       : "none",
+  //     minHeight: "42px",
+  //     opacity: 1,
+  //     "&:hover": {
+  //       borderColor: state.isFocused
+  //         ? "var(--color-primary-600)"
+  //         : isDark()
+  //           ? "var(--color-dark-400)"
+  //           : "var(--color-gray-400)",
+  //     },
+  //   }),
 
-    valueContainer: (provided: any) => ({
-      ...provided,
-      color: isDark() ? "var(--color-dark-100)" : "var(--color-gray-800)",
-    }),
+  //   valueContainer: (provided: any) => ({
+  //     ...provided,
+  //     color: isDark() ? "var(--color-dark-100)" : "var(--color-gray-800)",
+  //   }),
 
-    singleValue: (provided: any, state: any) => ({
-      ...provided,
-      color: state.isDisabled
-        ? isDark()
-          ? "var(--color-dark-100)"
-          : "var(--color-gray-800)"
-        : isDark()
-          ? "var(--color-dark-100)"
-          : "var(--color-gray-800)",
-      opacity: 1,
-    }),
+  //   singleValue: (provided: any, state: any) => ({
+  //     ...provided,
+  //     color: state.isDisabled
+  //       ? isDark()
+  //         ? "var(--color-dark-100)"
+  //         : "var(--color-gray-800)"
+  //       : isDark()
+  //         ? "var(--color-dark-100)"
+  //         : "var(--color-gray-800)",
+  //     opacity: 1,
+  //   }),
 
-    input: (provided: any) => ({
-      ...provided,
-      color: isDark() ? "var(--color-dark-100)" : "var(--color-gray-800)",
-    }),
+  //   input: (provided: any) => ({
+  //     ...provided,
+  //     color: isDark() ? "var(--color-dark-100)" : "var(--color-gray-800)",
+  //   }),
 
-    placeholder: (provided: any) => ({
-      ...provided,
-      color: "var(--color-gray-400)",
-    }),
+  //   placeholder: (provided: any) => ({
+  //     ...provided,
+  //     color: "var(--color-gray-400)",
+  //   }),
 
-    menu: (provided: any) => ({
-      ...provided,
-      backgroundColor: isDark() ? "var(--color-dark-700)" : "#ffffff",
-      border: isDark()
-        ? "1px solid var(--color-dark-450)"
-        : "1px solid var(--color-gray-300)",
-      borderRadius: "0.75rem",
-      overflow: "hidden",
-    }),
+  //   menu: (provided: any) => ({
+  //     ...provided,
+  //     backgroundColor: isDark() ? "var(--color-dark-700)" : "#ffffff",
+  //     border: isDark()
+  //       ? "1px solid var(--color-dark-450)"
+  //       : "1px solid var(--color-gray-300)",
+  //     borderRadius: "0.75rem",
+  //     overflow: "hidden",
+  //   }),
 
-    menuList: (provided: any) => ({
-      ...provided,
-      padding: 0,
-      // Custom scrollbar styles
-      "::-webkit-scrollbar": {
-        width: "6px",
-      },
-      "::-webkit-scrollbar-track": {
-        background: isDark() ? "var(--color-dark-600)" : "#f3f4f6",
-      },
-      "::-webkit-scrollbar-thumb": {
-        background: isDark() ? "var(--color-primary-600)" : "#d1d5db",
-        borderRadius: "10px",
-      },
-      "::-webkit-scrollbar-thumb:hover": {
-        background: isDark() ? "var(--color-primary-500)" : "#9ca3af",
-      },
-      scrollbarWidth: "thin",
-      scrollbarColor: isDark()
-        ? "var(--color-primary-600) var(--color-dark-600)"
-        : "#d1d5db #f3f4f6",
-    }),
+  //   menuList: (provided: any) => ({
+  //     ...provided,
+  //     padding: 0,
+  //     // Custom scrollbar styles
+  //     "::-webkit-scrollbar": {
+  //       width: "6px",
+  //     },
+  //     "::-webkit-scrollbar-track": {
+  //       background: isDark() ? "var(--color-dark-600)" : "#f3f4f6",
+  //     },
+  //     "::-webkit-scrollbar-thumb": {
+  //       background: isDark() ? "var(--color-primary-600)" : "#d1d5db",
+  //       borderRadius: "10px",
+  //     },
+  //     "::-webkit-scrollbar-thumb:hover": {
+  //       background: isDark() ? "var(--color-primary-500)" : "#9ca3af",
+  //     },
+  //     scrollbarWidth: "thin",
+  //     scrollbarColor: isDark()
+  //       ? "var(--color-primary-600) var(--color-dark-600)"
+  //       : "#d1d5db #f3f4f6",
+  //   }),
 
-    option: (provided: any, state: any) => ({
-      ...provided,
-      backgroundColor: state.isSelected
-        ? "var(--color-primary-600)"
-        : state.isFocused
-          ? isDark()
-            ? "var(--color-dark-600)"
-            : "var(--color-gray-100)"
-          : isDark()
-            ? "var(--color-dark-700)"
-            : "#ffffff",
-      color: state.isSelected
-        ? "#ffffff"
-        : isDark()
-          ? "#ffffff"
-          : "var(--color-gray-800)",
-      cursor: "pointer",
-    }),
+  //   option: (provided: any, state: any) => ({
+  //     ...provided,
+  //     backgroundColor: state.isSelected
+  //       ? "var(--color-primary-600)"
+  //       : state.isFocused
+  //         ? isDark()
+  //           ? "var(--color-dark-600)"
+  //           : "var(--color-gray-100)"
+  //         : isDark()
+  //           ? "var(--color-dark-700)"
+  //           : "#ffffff",
+  //     color: state.isSelected
+  //       ? "#ffffff"
+  //       : isDark()
+  //         ? "#ffffff"
+  //         : "var(--color-gray-800)",
+  //     cursor: "pointer",
+  //   }),
 
-    dropdownIndicator: (provided: any) => ({
-      ...provided,
-      color: isDark() ? "var(--color-gray-400)" : "var(--color-gray-500)",
-    }),
+  //   dropdownIndicator: (provided: any) => ({
+  //     ...provided,
+  //     color: isDark() ? "var(--color-gray-400)" : "var(--color-gray-500)",
+  //   }),
 
-    clearIndicator: (provided: any) => ({
-      ...provided,
-      color: isDark() ? "var(--color-gray-400)" : "var(--color-gray-500)",
-    }),
+  //   clearIndicator: (provided: any) => ({
+  //     ...provided,
+  //     color: isDark() ? "var(--color-gray-400)" : "var(--color-gray-500)",
+  //   }),
 
-    indicatorSeparator: () => ({
-      display: "none",
-    }),
-  };
+  //   indicatorSeparator: () => ({
+  //     display: "none",
+  //   }),
+  // };
   // Loading state
   if (loading) {
     return (
@@ -655,13 +655,13 @@ const fetchEmployee = async () => {
             <Button
               onClick={() => {
                 setIsEditing(false);
-                fetchBranch();
+                // fetchBranch();
                 toast.info("Changes discarded");
               }}
             >
               Cancel
             </Button>
-            <Button color="primary" onClick={handleSave}>
+            <Button color="primary" >
               Save
             </Button>
           </>
