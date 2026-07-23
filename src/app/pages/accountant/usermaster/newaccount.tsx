@@ -215,10 +215,13 @@ const { user } = useAuthContext();
 
     if (isEditMode) {
  await apiHelper.put(`/accountant/accounts/${editData.id}`, finalPayload);
+  toast.success("Account updated successfully!");
 } else {
  await apiHelper.post("/accountant/accounts", finalPayload);
+   toast.success("Account created successfully!");
 }
 
+     
       navigate("/usermaster/account");
     } catch (error: any) {
       console.log(error);

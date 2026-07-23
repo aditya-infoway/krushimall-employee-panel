@@ -39,26 +39,19 @@ const entriesOptions = [
   { id: 50, name: "50" },
   { id: 100, name: "100" },
 ];
-interface QuotationHistoryItem {
+interface TestDriveHistoryItem {
   id: number;
   customerName: string;
   mobile: string;
-  quotationNo: string;
-  revisionCount: number;
+  testDriveCount: number;
   updatedAt: string;
 }
-
 // --------------------------------------------
 
-export default function QuotationHistory() {
+export default function TestdriveHistory() {
   const navigate = useNavigate();
 
-  const [
-    quotationHistory,
-    setQuotationHistory,
-  ] = useState<
-    QuotationHistoryItem[]
-  >([]);
+const [testDriveHistory, setTestDriveHistory] = useState<TestDriveHistoryItem[]>([]);
 
   const [
     loading,
@@ -77,39 +70,32 @@ const [
   // GET QUOTATION HISTORY
   // ------------------------------------------
 
-  const fetchQuotationHistory =
-    async () => {
-      try {
-        setLoading(true);
+const fetchTestDriveHistory = async () => {
+  try {
+    setLoading(true);
 
-      const response = await apiHelper.get(
-  "/salesexecutive/lead/quotation/history",
-);
+    const response = await apiHelper.get("/salesexecutive/test-drives/history");
 
-        setQuotationHistory(
-          response.data || [],
-        );
-      } catch (error) {
-        console.error(
-          "Failed to fetch quotation history:",
-          error,
-        );
+    
 
-        setQuotationHistory([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setTestDriveHistory(response.data);
+  } catch (error) {
+    console.error("Failed to fetch Test Drive History:", error);
+    setTestDriveHistory([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  useEffect(() => {
-    fetchQuotationHistory();
-  }, []);
+useEffect(() => {
+  fetchTestDriveHistory();
+}, []);
 // ------------------------------------------
 // PAGINATION
 // ------------------------------------------
 
 const totalItems =
-  quotationHistory.length;
+  testDriveHistory.length;
 
 const totalPages =
   Math.ceil(
@@ -124,7 +110,7 @@ const indexOfFirstItem =
   itemsPerPage;
 
 const currentItems =
-  quotationHistory.slice(
+  testDriveHistory.slice(
     indexOfFirstItem,
     indexOfLastItem,
   );
@@ -135,24 +121,22 @@ const currentItems =
 const handleView = (
   leadId: number,
 ) => {
-  navigate(
-    `/leadmaster/quotationhistory/${leadId}`,
-  );
+  navigate(`/leadmaster/testdrivehistory/${leadId}`);
 };
 
   return (
-    <Page title="Quotation History">
+    <Page title="Test Drive History">
       <div className="transition-content px-(--margin-x) pb-6">
         {/* PAGE TITLE */}
 
         <div className="flex items-center justify-between py-5">
           <div>
             <h2 className="text-xl font-medium tracking-wide text-gray-800 dark:text-dark-100">
-              Quotation History
+              TestDrive History
             </h2>
 
             <p className="mt-1 text-sm text-gray-500 dark:text-dark-300">
-              Customer quotation revision
+              Customer TestDrive
               history
             </p>
           </div>
@@ -178,7 +162,7 @@ const handleView = (
                   </th>
 
                   <th className="px-4 py-3 text-center font-semibold">
-                    Revision Count
+                  Test Drive Count
                   </th>
 
                   <th className="px-4 py-3 text-center font-semibold">
@@ -204,8 +188,7 @@ const handleView = (
                       colSpan={5}
                       className="px-4 py-10 text-center text-gray-500"
                     >
-                      No quotation revision
-                      history found
+                    No test drive history found
                     </td>
                   </tr>
                 ) : (
@@ -232,7 +215,7 @@ const handleView = (
                         <td className="px-4 py-3 text-center">
                           <span className="inline-flex min-w-8 items-center justify-center rounded-full bg-primary-100 px-2.5 py-1 text-xs font-semibold text-primary-600 dark:bg-primary-500/20">
                             {
-                              item.revisionCount
+                              item.testDriveCount
                             }
                           </span>
                         </td>

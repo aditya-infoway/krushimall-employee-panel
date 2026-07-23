@@ -18,7 +18,8 @@ import AccessoriesInventory from "@/app/pages/salesexecutive/goodscontrol/access
 
 // Booking Balance
 import BookingBalance from "@/app/pages/salesexecutive/bookingbalance/bookingbalance";
-
+import TestdriveHistory from "@/app/pages/salesexecutive/leadmaster/textdrivehistory";
+import TestDriveHistoryDetails from "@/app/pages/salesexecutive/leadmaster/textdrivehistoryDetails";
 // User Master
 import Account from "@/app/pages/salesexecutive/usermaster/account";
 import Employee from "@/app/pages/salesexecutive/usermaster/employee";
@@ -27,7 +28,7 @@ import NewAccount from "@/app/pages/salesexecutive/usermaster/newaccount";
 
 // Stock Transfer
 import VehicleStock from "@/app/pages/salesexecutive/stocktransfer/vehiclestock";
-
+import FollowupHistory from "@/app/pages/salesexecutive/leadmaster/followuphistory";
 // Settings
 import SettingsLayout from "@/app/pages/salesexecutive/settings/Layout";
 import General from "@/app/pages/salesexecutive/settings/sections/General";
@@ -64,6 +65,10 @@ export const salesExecutiveRoutes = [
       path: "followup/:id",
       Component: Followup,
     },
+     {
+      path: "followuphistory/:id",
+      Component: FollowupHistory,
+    },
     {
       path: "order/:id",
       Component: Order,
@@ -79,6 +84,14 @@ export const salesExecutiveRoutes = [
     {
       path: "quotationhistory/:id",
       Component: QuotationHistoryDetails,
+    },
+     {
+      path: "textdrivehistory",
+      Component: TestdriveHistory,
+    },
+    {
+      path: "testdrivehistory/:id",
+      Component: TestDriveHistoryDetails,
     },
   ],
 },
