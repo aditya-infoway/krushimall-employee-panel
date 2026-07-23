@@ -52,6 +52,10 @@ export interface PurchaseItemRow {
   first2TyerNo?: string;
   second1TyerNo?: string;
   second2TyerNo?: string;
+
+  inwardBy?: string;
+  inwardType?: string;
+  inwardDate?: string;
   location?: string;
   grnNumber?: string;
   grnDate?: string;
@@ -188,7 +192,7 @@ const AccessoriesItemList: React.FC<PurchaseItemListProps> = ({ onAddItem }) => 
       setLoading(true);
 
      const res = await apiHelper.get(
-  `/accessories-purchase/${id}`
+  `/accountant/accessories-purchase/${id}`
 );
 
 const purchase = res.data;
@@ -216,7 +220,9 @@ const purchase = res.data;
     perRate: Number(item.purchaseRate),
     gstPercent: Number(item.gstPercent),
     amount: Number(item.netAmount),
-
+   inwardBy: item.inwardBy || "",
+    inwardType: item.inwardType || "",
+    inwardDate: item.inwardDate || "",
    status: item.status || "Pending",
   }))
 );
@@ -280,7 +286,7 @@ const purchase = res.data;
 
 const handleSelectRow = async (item: PurchaseItemRow) => {
   try {
-    await apiHelper.put(`/accessories-purchase/item-status/${item.id}`, {
+    await apiHelper.put(`/accountant/accessories-purchase/item-status/${item.id}`, {
       status: "Inward",
     });
 
@@ -592,6 +598,15 @@ const handleSelectRow = async (item: PurchaseItemRow) => {
                 <Th className="py-3.5 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   Status
                 </Th>
+                 <Th className="py-3.5 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                 Created By
+                </Th>
+                 <Th className="py-3.5 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                 Created Type
+                </Th>
+                  <Th className="py-3.5 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+               Inward Date
+                </Th>
               
                 <Th className="w-20 py-3.5 text-center text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   View
@@ -649,7 +664,11 @@ const handleSelectRow = async (item: PurchaseItemRow) => {
                         {item.status}
                       </span>
                     </Td>
-                    
+                     <Td className="py-4">{item.inwardBy }</Td>
+                    <Td className="py-4">{item.inwardType }</Td>
+                     <Td className="py-4">  {item.inwardDate
+    ? new Date(item.inwardDate).toLocaleString("en-GB")
+    : "-"}</Td>
                     <Td className="py-4 text-center">
                      
                         <button

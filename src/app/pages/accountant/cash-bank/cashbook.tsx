@@ -114,7 +114,7 @@ const CashBook: React.FC = () => {
 
   const getCashAccounts = async () => {
     try {
-      const res = await apiHelper.get("/accounts");
+        const res = await apiHelper.get("/accounts?scope=all");
 
       const accounts = res.data || [];
 
@@ -152,8 +152,8 @@ const CashBook: React.FC = () => {
   const getCashBook = async () => {
     try {
       const [cashPayments, cashReceipts] = await Promise.all([
-        apiHelper.get("/cash-payment"),
-        apiHelper.get("/cash-receipt"),
+        apiHelper.get("/accountant/cash-payment"),
+        apiHelper.get("/accountant/cash-receipt"),
       ]);
       // console.log("Cash Payments:", cashPayments);
       //       console.log("Cash Payments", cashPayments);

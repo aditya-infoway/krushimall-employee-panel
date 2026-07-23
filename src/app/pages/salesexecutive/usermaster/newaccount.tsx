@@ -49,7 +49,7 @@ const NewAccount = () => {
   const location = useLocation();
   const isEditMode = location.state?.item ? true : false;
   const editData = location.state?.item || null;
-const { user } = useAuthContext();
+  const { user } = useAuthContext();
   const [countryCode, setCountryCode] = useState("");
   const [stateCode, setStateCode] = useState("");
 
@@ -213,17 +213,13 @@ const { user } = useAuthContext();
         openingBalance: Number(data.openingBalance) || 0,
       };
 
-    if (isEditMode) {
-  await apiHelper.put(
-    `/salesexecutive/account/${editData.id}`,
-    finalPayload
-  );
-} else {
-  await apiHelper.post(
-    "/salesexecutive/account",
-    finalPayload
-  );
-}
+      if (isEditMode) {
+        await apiHelper.put( `/salesexecutive/account/${editData.id}`,  finalPayload,  );
+         toast.success("Account updated successfully!");
+      } else {
+        await apiHelper.post("/salesexecutive/account", finalPayload);
+         toast.success("Account created successfully!");
+      }
 
       navigate("/usermaster/account");
     } catch (error: any) {
@@ -265,128 +261,128 @@ const { user } = useAuthContext();
   const districtOptions = cityOptions;
   const talukaOptions = cityOptions;
 
-
   const isDark = () => {
-  if (typeof document === "undefined") return false;
-  return document.documentElement.classList.contains("dark");
-};
-
+    if (typeof document === "undefined") return false;
+    return document.documentElement.classList.contains("dark");
+  };
 
   // ─── react-select custom styles ──────────────────────────────────────────
- const customSelectStyles = {
-  control: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: "transparent",
-    borderColor: state.isFocused
-      ? "var(--color-primary-600)"
-      : isDark() 
-        ? "var(--color-dark-450)" 
-        : "var(--color-gray-300)",
-    boxShadow: state.isFocused ? "0 0 0 1px var(--color-primary-600)" : "none",
-    minHeight: "42px",
-    opacity: 1,
-    "&:hover": {
+  const customSelectStyles = {
+    control: (provided: any, state: any) => ({
+      ...provided,
+      backgroundColor: "transparent",
       borderColor: state.isFocused
         ? "var(--color-primary-600)"
         : isDark()
-          ? "var(--color-dark-400)"
-          : "var(--color-gray-400)",
-    },
-  }),
+          ? "var(--color-dark-450)"
+          : "var(--color-gray-300)",
+      boxShadow: state.isFocused
+        ? "0 0 0 1px var(--color-primary-600)"
+        : "none",
+      minHeight: "42px",
+      opacity: 1,
+      "&:hover": {
+        borderColor: state.isFocused
+          ? "var(--color-primary-600)"
+          : isDark()
+            ? "var(--color-dark-400)"
+            : "var(--color-gray-400)",
+      },
+    }),
 
-  valueContainer: (provided: any) => ({
-    ...provided,
-    color: isDark() ? "var(--color-dark-100)" : "var(--color-gray-800)",
-  }),
+    valueContainer: (provided: any) => ({
+      ...provided,
+      color: isDark() ? "var(--color-dark-100)" : "var(--color-gray-800)",
+    }),
 
-  singleValue: (provided: any, state: any) => ({
-    ...provided,
-    color: state.isDisabled
-      ? (isDark() ? "var(--color-dark-100)" : "var(--color-gray-800)")
-      : (isDark() ? "var(--color-dark-100)" : "var(--color-gray-800)"),
-    opacity: 1,
-  }),
-
-  input: (provided: any) => ({
-    ...provided,
-    color: isDark() ? "var(--color-dark-100)" : "var(--color-gray-800)",
-  }),
-
-  placeholder: (provided: any) => ({
-    ...provided,
-    color: "var(--color-gray-400)",
-  }),
-
-  menu: (provided: any) => ({
-    ...provided,
-    backgroundColor: isDark() ? "var(--color-dark-700)" : "#ffffff",
-    border: isDark() 
-      ? "1px solid var(--color-dark-450)" 
-      : "1px solid var(--color-gray-300)",
-    borderRadius: "0.75rem",
-    overflow: "hidden",
-  }),
-
-  menuList: (provided: any) => ({
-    ...provided,
-    padding: 0,
-    // Custom scrollbar styles
-    "::-webkit-scrollbar": {
-      width: "6px",
-    },
-    "::-webkit-scrollbar-track": {
-      background: isDark() ? "var(--color-dark-600)" : "#f3f4f6",
-    },
-    "::-webkit-scrollbar-thumb": {
-      background: isDark() ? "var(--color-primary-600)" : "#d1d5db",
-      borderRadius: "10px",
-    },
-    "::-webkit-scrollbar-thumb:hover": {
-      background: isDark() ? "var(--color-primary-500)" : "#9ca3af",
-    },
-    scrollbarWidth: "thin",
-    scrollbarColor: isDark() 
-      ? "var(--color-primary-600) var(--color-dark-600)" 
-      : "#d1d5db #f3f4f6",
-  }),
-
-  option: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: state.isSelected
-      ? "var(--color-primary-600)"
-      : state.isFocused
+    singleValue: (provided: any, state: any) => ({
+      ...provided,
+      color: state.isDisabled
         ? isDark()
-          ? "var(--color-dark-600)"
-          : "var(--color-gray-100)"
+          ? "var(--color-dark-100)"
+          : "var(--color-gray-800)"
         : isDark()
-          ? "var(--color-dark-700)"
-          : "#ffffff",
-    color: state.isSelected
-      ? "#ffffff"
-      : isDark()
+          ? "var(--color-dark-100)"
+          : "var(--color-gray-800)",
+      opacity: 1,
+    }),
+
+    input: (provided: any) => ({
+      ...provided,
+      color: isDark() ? "var(--color-dark-100)" : "var(--color-gray-800)",
+    }),
+
+    placeholder: (provided: any) => ({
+      ...provided,
+      color: "var(--color-gray-400)",
+    }),
+
+    menu: (provided: any) => ({
+      ...provided,
+      backgroundColor: isDark() ? "var(--color-dark-700)" : "#ffffff",
+      border: isDark()
+        ? "1px solid var(--color-dark-450)"
+        : "1px solid var(--color-gray-300)",
+      borderRadius: "0.75rem",
+      overflow: "hidden",
+    }),
+
+    menuList: (provided: any) => ({
+      ...provided,
+      padding: 0,
+      // Custom scrollbar styles
+      "::-webkit-scrollbar": {
+        width: "6px",
+      },
+      "::-webkit-scrollbar-track": {
+        background: isDark() ? "var(--color-dark-600)" : "#f3f4f6",
+      },
+      "::-webkit-scrollbar-thumb": {
+        background: isDark() ? "var(--color-primary-600)" : "#d1d5db",
+        borderRadius: "10px",
+      },
+      "::-webkit-scrollbar-thumb:hover": {
+        background: isDark() ? "var(--color-primary-500)" : "#9ca3af",
+      },
+      scrollbarWidth: "thin",
+      scrollbarColor: isDark()
+        ? "var(--color-primary-600) var(--color-dark-600)"
+        : "#d1d5db #f3f4f6",
+    }),
+
+    option: (provided: any, state: any) => ({
+      ...provided,
+      backgroundColor: state.isSelected
+        ? "var(--color-primary-600)"
+        : state.isFocused
+          ? isDark()
+            ? "var(--color-dark-600)"
+            : "var(--color-gray-100)"
+          : isDark()
+            ? "var(--color-dark-700)"
+            : "#ffffff",
+      color: state.isSelected
         ? "#ffffff"
-        : "var(--color-gray-800)",
-    cursor: "pointer",
-  }),
+        : isDark()
+          ? "#ffffff"
+          : "var(--color-gray-800)",
+      cursor: "pointer",
+    }),
 
-  dropdownIndicator: (provided: any) => ({
-    ...provided,
-    color: isDark() 
-      ? "var(--color-gray-400)" 
-      : "var(--color-gray-500)",
-  }),
+    dropdownIndicator: (provided: any) => ({
+      ...provided,
+      color: isDark() ? "var(--color-gray-400)" : "var(--color-gray-500)",
+    }),
 
-  clearIndicator: (provided: any) => ({
-    ...provided,
-    color: isDark() 
-      ? "var(--color-gray-400)" 
-      : "var(--color-gray-500)",
-  }),
+    clearIndicator: (provided: any) => ({
+      ...provided,
+      color: isDark() ? "var(--color-gray-400)" : "var(--color-gray-500)",
+    }),
 
-  indicatorSeparator: () => ({
-    display: "none",
-  }),
-};
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+  };
   return (
     <div className="min-h-screen bg-white p-6 transition-colors duration-200 dark:bg-gray-900">
       {/* Header with Back Button */}
@@ -860,13 +856,13 @@ const { user } = useAuthContext();
           <button
             type="button"
             onClick={handleBack}
-            className="rounded cursor-pointer border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+            className="cursor-pointer rounded border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="rounded cursor-pointer bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+            className="cursor-pointer rounded bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
             {isEditMode ? "Update" : "Save"}
           </button>

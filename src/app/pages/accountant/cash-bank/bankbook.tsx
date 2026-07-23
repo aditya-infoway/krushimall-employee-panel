@@ -52,7 +52,7 @@ const BankBook: React.FC = () => {
   ];
   const getBankAccounts = async () => {
     try {
-      const res = await apiHelper.get("/accounts");
+       const res = await apiHelper.get("/accounts?scope=all");
 
       console.log("Account API Response:", res);
 
@@ -173,8 +173,8 @@ const BankBook: React.FC = () => {
   const getBankBook = async () => {
     try {
       const [bankPayments,bankReceipts] = await Promise.all([
-        apiHelper.get("/bank-payment"),
-        apiHelper.get("/bank-receipt"),
+        apiHelper.get("/accountant/bank-payment"),
+        apiHelper.get("/accountant/bank-receipt"),
       ]);
 
     const paymentData = (bankPayments || []).map((item: any) => ({

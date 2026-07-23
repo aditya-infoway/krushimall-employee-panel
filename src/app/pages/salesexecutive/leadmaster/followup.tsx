@@ -34,6 +34,7 @@ import { Timepicker } from "@/components/shared/form/Timepicker";
 import { Listbox } from "@/components/shared/form/StyledListbox";
 import { toast } from "sonner";
 import { useAuthContext } from "@/app/contexts/auth/context";
+import { useNavigate } from "react-router";
 const columns = [
   {
     title: "New",
@@ -98,7 +99,7 @@ export default function Followup() {
   const [followups, setFollowups] = useState<any[]>([]);
   const [expectedPurchaseDate, setExpectedPurchaseDate] = useState<any>(null);
 const { user } = useAuthContext();
-
+const navigate = useNavigate();
 const isSalesExecutive =
   user?.role === "Sales Executive";
   const [errors, setErrors] = useState({
@@ -371,6 +372,7 @@ const isSalesExecutive =
                       </button>
 
                       <button
+                       onClick={() => navigate(`/leadmaster/followuphistory/${item.leadId}`)}
                         className="hover:text-primary-500 dark:hover:text-primary-400 cursor-pointer transition-colors"
                         title="Follow Up"
                       >

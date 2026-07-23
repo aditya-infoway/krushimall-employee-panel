@@ -5,10 +5,10 @@ import {
   ChevronDown,
   X,
   Plus,
-  Download,
-  Trash2,
-  Edit,
-  ChevronsUpDown,
+  // Download,
+  // Trash2,
+  // Edit,
+  // ChevronsUpDown,
   ChevronLeft,
   ChevronRight,
   Check,
@@ -79,26 +79,26 @@ interface BankPayment {
   oppAccount: string;
 }
 
-const BANK_ACCOUNTS = [
-  {
-    id: 1,
-    label: "HDFC Bank (9081540777)",
-    value: "HDFC Bank (9081540777)",
-    balance: "5,00,000.00 DR",
-  },
-  {
-    id: 2,
-    label: "ICICI Bank (9081540774)",
-    value: "ICICI Bank (9081540774)",
-    balance: "2,00,000.00 DR",
-  },
-  {
-    id: 3,
-    label: "SBI Bank (9081540778)",
-    value: "SBI Bank (9081540778)",
-    balance: "3,50,000.00 DR",
-  },
-];
+// const BANK_ACCOUNTS = [
+//   {
+//     id: 1,
+//     label: "HDFC Bank (9081540777)",
+//     value: "HDFC Bank (9081540777)",
+//     balance: "5,00,000.00 DR",
+//   },
+//   {
+//     id: 2,
+//     label: "ICICI Bank (9081540774)",
+//     value: "ICICI Bank (9081540774)",
+//     balance: "2,00,000.00 DR",
+//   },
+//   {
+//     id: 3,
+//     label: "SBI Bank (9081540778)",
+//     value: "SBI Bank (9081540778)",
+//     balance: "3,50,000.00 DR",
+//   },
+// ];
 
 const OPP_ACCOUNTS = [
   {
@@ -351,47 +351,47 @@ export default function BankPayment() {
     setShowDrawer(true);
   };
 
-  const handleEdit = (item: BankPayment) => {
-    setEditId(item.id);
-    setForm({
-      type: item.type,
-      bankAccount:
-        bankAccounts.find(
-          (a: any) => Number(a.value) === Number(item.bankAccount),
-        ) || null,
+  // const handleEdit = (item: BankPayment) => {
+  //   setEditId(item.id);
+  //   setForm({
+  //     type: item.type,
+  //     bankAccount:
+  //       bankAccounts.find(
+  //         (a: any) => Number(a.value) === Number(item.bankAccount),
+  //       ) || null,
 
-      oppAccount:
-        oppAccounts.find(
-          (a: any) => Number(a.value) === Number(item.oppAccount),
-        ) || null,
-      voucherNo: item.voucherNo,
-      date: item.date ? [new Date(item.date)] : [],
+  //     oppAccount:
+  //       oppAccounts.find(
+  //         (a: any) => Number(a.value) === Number(item.oppAccount),
+  //       ) || null,
+  //     voucherNo: item.voucherNo,
+  //     date: item.date ? [new Date(item.date)] : [],
 
-      amount: String(item.amount),
-      paymentMode:
-        PAYMENT_MODES.find((a) => a.id === item.paymentMode) ||
-        PAYMENT_MODES.find((m) => m.id === "UPI") ||
-        null,
-      chequeNo: item.chequeNo || "",
-      chequeDate: item.chequeDate || null,
-      chequeClearDate: item.chequeClearDate || null,
-      narration: item.narration,
-      createdType: item.createdType,
-      createdBy: item.createdBy,
-      leadNo: item.leadNo || "",
-    });
-    setErrors({});
-    setShowDrawer(true);
-  };
+  //     amount: String(item.amount),
+  //     paymentMode:
+  //       PAYMENT_MODES.find((a) => a.id === item.paymentMode) ||
+  //       PAYMENT_MODES.find((m) => m.id === "UPI") ||
+  //       null,
+  //     chequeNo: item.chequeNo || "",
+  //     chequeDate: item.chequeDate || null,
+  //     chequeClearDate: item.chequeClearDate || null,
+  //     narration: item.narration,
+  //     createdType: item.createdType,
+  //     createdBy: item.createdBy,
+  //     leadNo: item.leadNo || "",
+  //   });
+  //   setErrors({});
+  //   setShowDrawer(true);
+  // };
 
-  const handleDelete = (id: number) => {
-    setRows(rows.filter((row) => row.id !== id));
-  };
+  // const handleDelete = (id: number) => {
+  //   setRows(rows.filter((row) => row.id !== id));
+  // };
 
-  const handleBulkDelete = () => {
-    setRows(rows.filter((row) => !selectedIds.includes(row.id)));
-    setSelectedIds([]);
-  };
+  // const handleBulkDelete = () => {
+  //   setRows(rows.filter((row) => !selectedIds.includes(row.id)));
+  //   setSelectedIds([]);
+  // };
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
@@ -470,19 +470,19 @@ export default function BankPayment() {
   }));
 
   // Transform OPP_ACCOUNTS to include balance on the right
-  const maxLabelLength = Math.max(...OPP_ACCOUNTS.map((a) => a.label.length));
-  const EXTRA_SPACING = 6;
+  // const maxLabelLength = Math.max(...OPP_ACCOUNTS.map((a) => a.label.length));
+  // const EXTRA_SPACING = 6;
 
-  const OPP_ACCOUNTS_WITH_BALANCE = OPP_ACCOUNTS.map((account) => {
-    const paddedLabel = account.label.padEnd(
-      maxLabelLength + EXTRA_SPACING,
-      " ",
-    );
-    return {
-      ...account,
-      label: `${paddedLabel}${account.balance}`,
-    };
-  });
+  // const OPP_ACCOUNTS_WITH_BALANCE = OPP_ACCOUNTS.map((account) => {
+  //   const paddedLabel = account.label.padEnd(
+  //     maxLabelLength + EXTRA_SPACING,
+  //     " ",
+  //   );
+  //   return {
+  //     ...account,
+  //     label: `${paddedLabel}${account.balance}`,
+  //   };
+  // });
 
   // Apply filters automatically when any filter changes
   useEffect(() => {
