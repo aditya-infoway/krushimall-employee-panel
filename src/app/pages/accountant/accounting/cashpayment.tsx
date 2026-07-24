@@ -179,7 +179,7 @@ export default function CashPayment() {
   }, []);
   const getPurchaseBills = async () => {
     try {
-      const res = await apiHelper.get("/purchases");
+      const res = await apiHelper.get("/accountant/purchases/pending");
 
       setPurchaseBills(
         res.data.map((p: any) => ({
@@ -187,7 +187,9 @@ export default function CashPayment() {
           label: p.billNo,
           party: p.account?.accountName,
           accountId: p.accountId,
-          // amount: p.grandTotal,
+          balance: p.account?.closingBalance,
+          balanceType: p.account?.drCr,
+          pendingAmount: p.pendingAmount,
         })),
       );
     } catch (err) {
@@ -197,7 +199,7 @@ export default function CashPayment() {
 
   const getAccounts = async () => {
     try {
-       const res = await apiHelper.get("/accounts?scope=all");
+      const res = await apiHelper.get("/accounts?scope=all");
 
       const accounts = res.data;
 
@@ -430,7 +432,9 @@ export default function CashPayment() {
   }, [filterType, filterDateFrom, filterDateTo, search]);
   const handleExportExcel = async () => {
     try {
-      const blob = await apiHelper.getBlob("/accountant/cash-payment/export/excel");
+      const blob = await apiHelper.getBlob(
+        "/accountant/cash-payment/export/excel",
+      );
 
       const url = window.URL.createObjectURL(blob);
 
@@ -621,7 +625,7 @@ export default function CashPayment() {
                         className="size-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
                       />
                     </td>
-                    <td className="py-3 px-3 text-sm font-medium text-gray-500">
+                    <td className="px-3 py-3 text-sm font-medium text-gray-500">
                       {indexOfFirstItem + index + 1}
                     </td>
                     <td className="px-3 py-3 text-sm whitespace-nowrap text-gray-900 dark:text-gray-400">
@@ -877,18 +881,23 @@ export default function CashPayment() {
                             width: "3fr",
                           },
                         ]}
-                        onChange={(bill: any) => {
-                          setPurchaseBill(bill);
+                        onChange={(value: any) => {
+                          setPurchaseBill(value);
+
+                          const purchase = purchaseBills.find(
+                            (p) => p.value === value?.value,
+                          );
+
+                          if (!purchase) return;
 
                           const account = oppAccounts.find(
-                            (a: any) =>
-                              Number(a.value) === Number(bill.accountId),
+                            (a) => a.value === purchase.accountId,
                           );
 
                           setForm((prev) => ({
                             ...prev,
-                            amount: String(bill.amount),
                             oppAccount: account || null,
+                            amount: String(purchase.pendingAmount),
                           }));
                         }}
                       />
@@ -989,6 +998,24 @@ export default function CashPayment() {
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Opp. Account <span className="text-red-500">*</span>
                       </label>
+                      {form.oppAccount && (
+                        <span
+                          className={`text-sm font-semibold ${
+                            form.oppAccount.balanceType === "Dr"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          Balance : ₹
+                          {Number(form.oppAccount.balance || 0).toLocaleString(
+                            "en-IN",
+                            {
+                              minimumFractionDigits: 2,
+                            },
+                          )}{" "}
+                          {form.oppAccount.balanceType}
+                        </span>
+                      )}
                     </div>
                     <Combobox
                       data={oppAccounts}
@@ -1003,6 +1030,7 @@ export default function CashPayment() {
                       }}
                       placeholder="Search Opp. Account"
                       searchFields={["label", "mobile"]}
+                      disabled={form.type === "Purchase"}
                       columns={[
                         {
                           header: "Account",

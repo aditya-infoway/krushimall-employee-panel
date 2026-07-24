@@ -218,7 +218,7 @@ const getVoucher = async () => {
     setType("Cash Deposit");
     setCashBankAccount(null);
      setVoucherNo("");
-    setDate(null);
+    setDate(new Date());
     setOppAccount(null);
     setAmount("");
     setNarration("");

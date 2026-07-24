@@ -82,11 +82,20 @@ const Timepicker = ({
     return `${paddedHours}:${paddedMinutes}`;
   };
 
-  const getDisplayTime = () => {
-    if (value) return value;
-    return "";
-  };
+   const getDisplayTime = () => {
+  if (!value) return "";
 
+  const [hour, minute] = value.split(":").map(Number);
+
+  const date = new Date();
+  date.setHours(hour, minute);
+
+  return date.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
   const handleTimeSelect = () => {
     const timeStr = formatTime(selectedHour, selectedMinute, isAM);
     if (onChange) onChange(timeStr);
