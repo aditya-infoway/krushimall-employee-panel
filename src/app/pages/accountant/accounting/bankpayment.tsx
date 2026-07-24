@@ -200,17 +200,19 @@ export default function BankPayment() {
   }, []);
   const getPurchaseBills = async () => {
     try {
-      const res = await apiHelper.get("/purchases");
+        const res = await apiHelper.get("/accountant/purchases/pending");
 
       setPurchaseBills(
-        res.data.map((p: any) => ({
-          value: p.id,
-          label: p.billNo,
-          party: p.account?.accountName,
-          accountId: p.accountId,
-          // amount: p.grandTotal,
-        })),
-      );
+  res.data.map((p: any) => ({
+    value: p.id,
+    label: p.billNo,
+    party: p.account?.accountName,
+    accountId: p.accountId,
+    balance: p.account?.closingBalance,
+    balanceType: p.account?.drCr,
+    pendingAmount: p.pendingAmount,
+  }))
+);
     } catch (err) {
       console.log(err);
     }
@@ -992,20 +994,25 @@ export default function BankPayment() {
                             width: "3fr",
                           },
                         ]}
-                        onChange={(bill: any) => {
-                          setPurchaseBill(bill);
+                     onChange={(value: any) => {
+  setPurchaseBill(value);
 
-                          const account = oppAccounts.find(
-                            (a: any) =>
-                              Number(a.value) === Number(bill.accountId),
-                          );
+  const purchase = purchaseBills.find(
+    (p) => p.value === value?.value
+  );
 
-                          setForm((prev) => ({
-                            ...prev,
-                            amount: String(bill.amount),
-                            oppAccount: account || null,
-                          }));
-                        }}
+  if (!purchase) return;
+
+  const account = oppAccounts.find(
+    (a) => a.value === purchase.accountId
+  );
+
+  setForm((prev) => ({
+    ...prev,
+    oppAccount: account || null,
+    amount: String(purchase.pendingAmount),
+  }));
+}}
                       />
                     </div>
                   )}
@@ -1101,6 +1108,24 @@ export default function BankPayment() {
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Opp. Account <span className="text-red-500">*</span>
                       </label>
+                      {form.oppAccount && (
+                        <span
+                          className={`text-sm font-semibold ${
+                            form.oppAccount.balanceType === "Dr"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          Balance : ₹
+                          {Number(form.oppAccount.balance || 0).toLocaleString(
+                            "en-IN",
+                            {
+                              minimumFractionDigits: 2,
+                            },
+                          )}{" "}
+                          {form.oppAccount.balanceType}
+                        </span>
+                      )}
                     </div>
                     <Combobox
                       data={oppAccounts}
@@ -1115,6 +1140,7 @@ export default function BankPayment() {
                       displayField="label"
                       placeholder="Search Opp. Account"
                       searchFields={["label", "mobile"]}
+                       disabled={form.type === "Purchase"}
                       columns={[
                         {
                           header: "Account",

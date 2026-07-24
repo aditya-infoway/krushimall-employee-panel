@@ -22,7 +22,9 @@ import PurchaseBill from "@/app/pages/accountant/purchase/purchasebill";
 import PurchaseItemList from "@/app/pages/accountant/purchase/purchaseitemlist";
 import AccessoriesItemList from "@/app/pages/accountant/purchase/accessoriesitemlist";
 import PurAccessories from "@/app/pages/accountant/purchase/puraccessories";
-
+// Ledger Details
+import LedgerReport from "@/app/pages/accountant/ledgerdetails/ledgerreport";
+import LedgerDetails from "@/app/pages/accountant/ledgerdetails/ledgerdetails";
 // Booking Balance
 import BookingBalance from "@/app/pages/accountant/bookingbalance/bookingbalance";
 
@@ -162,7 +164,20 @@ export const accountantRoutes = [
     },
   ],
 },
-
+// Ledger Details
+{
+  path: "ledgerdetails",
+  children: [
+    {
+      path: "ledgerreport",
+      Component: LedgerReport,
+    },
+    {
+      path: "ledgerdetails",
+      Component: LedgerDetails,
+    },
+  ],
+},
   // User Master
  {
   path: "usermaster",
