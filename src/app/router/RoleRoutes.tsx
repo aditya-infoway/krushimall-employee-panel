@@ -2,7 +2,7 @@ import {  useRoutes } from "react-router";
 import { useAuthContext } from "@/app/contexts/auth/context";
 import { salesExecutiveRoutes } from "./roles/salesexecutive";
 import { accountantRoutes } from "./roles/accountant";
-
+import { storemanagerRoutes } from "./roles/storemanager";
 export default function RoleRoutes() {
   const { user } = useAuthContext();
 
@@ -14,6 +14,8 @@ export default function RoleRoutes() {
       ? salesExecutiveRoutes
       : role === "ACCOUNTANT"
       ? accountantRoutes
+        : role === "STOREMANAGER"
+      ? storemanagerRoutes
       : [];
 
  
