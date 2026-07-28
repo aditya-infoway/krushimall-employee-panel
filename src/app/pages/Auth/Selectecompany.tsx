@@ -302,7 +302,7 @@ const handleSelectCompany = (company: Company) => {
       navigate("/dashboards/dashboard");
       break;
 
-    case "TEAMLEAD":
+    case "STOREMANAGER":
       navigate("/dashboards/dashboard");
       break;
 
