@@ -342,7 +342,7 @@ const handleSave = async () => {
 
     const response =
       await apiHelper.put(
-        `/salesexecutive/lead/quotation/${id}`,
+        `/teamlead/lead/quotation/${id}`,
         payload,
       );
 

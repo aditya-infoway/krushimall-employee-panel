@@ -3,6 +3,7 @@ import { useAuthContext } from "@/app/contexts/auth/context";
 import { salesExecutiveRoutes } from "./roles/salesexecutive";
 import { accountantRoutes } from "./roles/accountant";
 import { storemanagerRoutes } from "./roles/storemanager";
+import { teamLeadRoutes } from "./roles/teamlead";
 export default function RoleRoutes() {
   const { user } = useAuthContext();
 
@@ -16,6 +17,8 @@ export default function RoleRoutes() {
       ? accountantRoutes
         : role === "STOREMANAGER"
       ? storemanagerRoutes
+       : role === "TEAMLEAD"
+      ? teamLeadRoutes
       : [];
 
  

@@ -1,40 +1,40 @@
 import { Navigate } from "react-router";
 
 // Dashboard
-import Dashboard from "@/app/pages/salesexecutive/dashboards/dashboard";
-import Inventory from "@/app/pages/salesexecutive/dashboards/inventory";
+import Dashboard from "@/app/pages/teamlead/dashboards/dashboard";
+import Inventory from "@/app/pages/teamlead/dashboards/inventory";
 
 // Lead Master
-import LeadBuilder from "@/app/pages/salesexecutive/leadmaster/leadbuilder";
-import Followup from "@/app/pages/salesexecutive/leadmaster/followup";
-import Order from "@/app/pages/salesexecutive/leadmaster/order";
-import QuotationEdit from "@/app/pages/salesexecutive/leadmaster/quotationEdit";
-import Quatationhistory from "@/app/pages/salesexecutive/leadmaster/Quatationhistory";
-import QuotationHistoryDetails from "@/app/pages/salesexecutive/leadmaster/QuotationHistoryDetails";
+import LeadBuilder from "@/app/pages/teamlead/leadmaster/leadbuilder";
+import Followup from "@/app/pages/teamlead/leadmaster/followup";
+import Order from "@/app/pages/teamlead/leadmaster/order";
+import QuotationEdit from "@/app/pages/teamlead/leadmaster/quotationEdit";
+import Quatationhistory from "@/app/pages/teamlead/leadmaster/Quatationhistory";
+import QuotationHistoryDetails from "@/app/pages/teamlead/leadmaster/QuotationHistoryDetails";
 
 // Goods Control
-import TractorInventory from "@/app/pages/salesexecutive/goodscontrol/tractorinventory";
-import AccessoriesInventory from "@/app/pages/salesexecutive/goodscontrol/accessoriesinventory";
+import TractorInventory from "@/app/pages/teamlead/goodscontrol/tractorinventory";
+import AccessoriesInventory from "@/app/pages/teamlead/goodscontrol/accessoriesinventory";
 
 // Booking Balance
-import BookingBalance from "@/app/pages/salesexecutive/bookingbalance/bookingbalance";
-import TestdriveHistory from "@/app/pages/salesexecutive/leadmaster/textdrivehistory";
-import TestDriveHistoryDetails from "@/app/pages/salesexecutive/leadmaster/textdrivehistoryDetails";
+import BookingBalance from "@/app/pages/teamlead/bookingbalance/bookingbalance";
+import TestdriveHistory from "@/app/pages/teamlead/leadmaster/textdrivehistory";
+import TestDriveHistoryDetails from "@/app/pages/teamlead/leadmaster/textdrivehistoryDetails";
 // User Master
-import Account from "@/app/pages/salesexecutive/usermaster/account";
-import Employee from "@/app/pages/salesexecutive/usermaster/employee";
-import Broker from "@/app/pages/salesexecutive/usermaster/broker";
-import NewAccount from "@/app/pages/salesexecutive/usermaster/newaccount";
+import Account from "@/app/pages/teamlead/usermaster/account";
+import Employee from "@/app/pages/teamlead/usermaster/employee";
+import Broker from "@/app/pages/teamlead/usermaster/broker";
+import NewAccount from "@/app/pages/teamlead/usermaster/newaccount";
 
 // Stock Transfer
-import VehicleStock from "@/app/pages/salesexecutive/stocktransfer/vehiclestock";
-import FollowupHistory from "@/app/pages/salesexecutive/leadmaster/followuphistory";
+import VehicleStock from "@/app/pages/teamlead/stocktransfer/vehiclestock";
+import FollowupHistory from "@/app/pages/teamlead/leadmaster/followuphistory";
 // Settings
-import SettingsLayout from "@/app/pages/salesexecutive/settings/Layout";
-import General from "@/app/pages/salesexecutive/settings/sections/General";
-import Appearance from "@/app/pages/salesexecutive/settings/sections/Appearance";
-import AccessoriesHistory from "@/app/pages/salesexecutive/goodscontrol/accessorieshistory";
-export const salesExecutiveRoutes = [
+import SettingsLayout from "@/app/pages/teamlead/settings/Layout";
+import General from "@/app/pages/teamlead/settings/sections/General";
+import Appearance from "@/app/pages/teamlead/settings/sections/Appearance";
+import AccessoriesHistory from "@/app/pages/teamlead/goodscontrol/accessorieshistory";
+export const teamLeadRoutes = [
   // Dashboard
   {
   path: "dashboards",

@@ -3,6 +3,7 @@ import { useAuthContext } from "@/app/contexts/auth/context";
 import { salesExecutiveNavigation } from "./segments/salesexecutive";
 import { accountantNavigation } from "./segments/accountant";
 import { storemanagerNavigation } from "./segments/storemanger";
+import { teamLeadNavigation } from "./segments/team_Lead";
 export function useNavigation() {
   const { user } = useAuthContext();
 
@@ -16,8 +17,10 @@ export function useNavigation() {
       return accountantNavigation;
     case "STOREMANAGER":
       return storemanagerNavigation;
-
+      case "TEAMLEAD":
+      return teamLeadNavigation;
     default:
       return [];
   }
 }
+ 
