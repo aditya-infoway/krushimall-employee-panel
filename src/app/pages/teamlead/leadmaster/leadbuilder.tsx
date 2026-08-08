@@ -125,21 +125,17 @@ const { user } = useAuthContext();
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
-  const fetchLeads = async () => {
-    try {
-     const res = await apiHelper.get(
-  user?.role === "Sales Executive"
-    ? "/salesexecutive/lead"
-    : "/leads"
-);
+ const fetchLeads = async () => {
+  try {
+    const res = await apiHelper.get("/teamlead/lead");
 
-      const data = Array.isArray(res.data) ? res.data : [];
+    const data = Array.isArray(res.data) ? res.data : [];
 
-      setLeadData(data);
-    } catch (error) {
-      console.error("Lead Error:", error);
-    }
-  };
+    setLeadData(data);
+  } catch (error) {
+    console.error("Lead Error:", error);
+  }
+};
 
   useEffect(() => {
     fetchLeads();
