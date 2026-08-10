@@ -573,7 +573,7 @@ const getBillNo = async () => {
   // Get Parties (Accounts)
   const getParties = async () => {
     try {
-        const res = await apiHelper.get("/accounts?scope=all");
+        const res = await apiHelper.get("/accountant/accounts?scope=all");
 
       const accounts = Array.isArray(res.data?.data)
         ? res.data.data
@@ -606,7 +606,7 @@ const getBillNo = async () => {
   // Get Cash & Bank Accounts
   const getAccounts = async () => {
     try {
-      const res = await apiHelper.get("/accounts?scope=all");
+      const res = await apiHelper.get("/accountant/accounts?scope=all");
       const accounts = Array.isArray(res.data?.data)
         ? res.data.data
         : Array.isArray(res.data)

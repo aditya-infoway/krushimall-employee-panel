@@ -67,7 +67,7 @@ const [filterData, setFilterData] = useState<FilterData>({
 
   const getLedgerAccounts = async () => {
   try {
-   const res = await apiHelper.get("/accounts?scope=all");
+   const res = await apiHelper.get("/accountant/accounts?scope=all");
 
     console.log("Accounts:", res);
 

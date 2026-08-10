@@ -1053,7 +1053,7 @@ function ReviewLeadSummaryStep({
   };
   const fetchAccounts = async () => {
     try {
-      const res = await apiHelper.get("/accounts");
+      const res = await apiHelper.get("/salesexecutive/account");
 
       const data = Array.isArray(res.data)
         ? res.data
@@ -2275,7 +2275,7 @@ marginMoney:
 
   const fetchCustomers = async () => {
     try {
-       const res = await apiHelper.get("/accounts?scope=all");
+       const res = await apiHelper.get("/salesexecutive/account?scope=all");
 
       const data = Array.isArray(res.data)
         ? res.data

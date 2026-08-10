@@ -257,7 +257,7 @@ const getLeads = async () => {
   }, []);
   const getAccounts = async () => {
     try {
-       const res = await apiHelper.get("/accounts?scope=all");
+       const res = await apiHelper.get("/accountant/accounts?scope=all");
 
       const accounts = res.data.data || res.data || [];
 
@@ -329,20 +329,25 @@ const getBankReceipts = async () => {
     getBankReceipts();
   }, []);
 
-  const getVoucherNo = async () => {
-    try {
-      const res = await apiHelper.get("/bank-receipt/voucher");
+const getVoucherNo = async () => {
+  try {
+    const res = await apiHelper.get(
+      `/bank-receipt/voucher?companyId=${companyId}&financialYearId=${financialYearId}`
+    );
 
-      const voucherNo = res?.data?.voucherNo ?? res?.voucherNo ?? "";
+    const voucherNo =
+      res?.data?.voucherNo ??
+      res?.voucherNo ??
+      "";
 
-      setForm((prev) => ({
-        ...prev,
-        voucherNo,
-      }));
-    } catch (err) {
-      console.log(err);
-    }
-  };
+    setForm((prev) => ({
+      ...prev,
+      voucherNo,
+    }));
+  } catch (err) {
+    console.log(err);
+  }
+};
   const handleAdd = async () => {
     setEditId(null);
     setErrors({});
