@@ -220,7 +220,7 @@ export default function BankPayment() {
 
   const getAccounts = async () => {
     try {
-      const res = await apiHelper.get("/accounts?scope=all");
+      const res = await apiHelper.get("/accountant/accounts?scope=all");
 
       const accounts = res.data;
 
@@ -286,18 +286,33 @@ export default function BankPayment() {
       console.log(err);
     }
   };
-  const getVoucherNo = async () => {
-    try {
-      const res = await apiHelper.get("/bank-payment/voucher");
+const getVoucherNo = async () => {
+  try {
+    const companyId = sessionStorage.getItem("companyId");
+    const financialYearId = sessionStorage.getItem("financialYearId");
 
-      setForm((prev) => ({
-        ...prev,
-        voucherNo: res.voucherNo,
-      }));
-    } catch (err) {
-      console.log(err);
+    if (!companyId || !financialYearId) {
+      toast.error("Company or Financial Year is not selected");
+      return;
     }
-  };
+
+    const res = await apiHelper.get(
+      `/bank-payment/voucher?companyId=${companyId}&financialYearId=${financialYearId}`
+    );
+
+    const voucherNo =
+      res?.data?.voucherNo ??
+      res?.voucherNo ??
+      "";
+
+    setForm((prev) => ({
+      ...prev,
+      voucherNo,
+    }));
+  } catch (err) {
+    console.error("Bank Payment Voucher Error:", err);
+  }
+};
   useEffect(() => {
     getAccounts();
     getPurchaseBills();

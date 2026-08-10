@@ -237,25 +237,38 @@ const getLeads = async () => {
   useEffect(() => {
     getCashReceipts();
   }, []);
-  const getVoucherNo = async () => {
-    try {
-      const res = await apiHelper.get("/cash-receipt/voucher");
+const getVoucherNo = async () => {
+  try {
+    const companyId = sessionStorage.getItem("companyId");
+    const financialYearId = sessionStorage.getItem("financialYearId");
 
-      console.log("Voucher API:", res);
-
-      const voucherNo = res?.data?.voucherNo ?? res?.voucherNo ?? "";
-
-      setForm((prev) => ({
-        ...prev,
-        voucherNo,
-      }));
-    } catch (err) {
-      console.log(err);
+    if (!companyId || !financialYearId) {
+      toast.error("Company or Financial Year is not selected");
+      return;
     }
-  };
+
+    const res = await apiHelper.get(
+      `/cash-receipt/voucher?companyId=${companyId}&financialYearId=${financialYearId}`
+    );
+
+  
+
+    const voucherNo =
+      res?.data?.voucherNo ??
+      res?.voucherNo ??
+      "";
+
+    setForm((prev) => ({
+      ...prev,
+      voucherNo,
+    }));
+  } catch (err) {
+    console.error("Cash Receipt Voucher Error:", err);
+  }
+};
   const getAccounts = async () => {
     try {
-       const res = await apiHelper.get("/accounts?scope=all");
+       const res = await apiHelper.get("/accountant/accounts?scope=all");
 
       const accounts = res.data.data || res.data || [];
 

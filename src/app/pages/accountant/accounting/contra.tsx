@@ -120,7 +120,7 @@ useEffect(() => {
      fetchContras();
     const fetchAccounts = async () => {
       try {
-        const res = await apiHelper.get("/accounts?scope=all");
+        const res = await apiHelper.get("/accountant/accounts?scope=all");
        
         const accountData = (res.data || res.data).map((acc: any) => ({
           id: acc.id,
@@ -200,18 +200,28 @@ const fetchContras = async () => {
 };
 const getVoucher = async () => {
   try {
-    const res = await apiHelper.get("/contra/voucher");
+    const companyId = sessionStorage.getItem("companyId");
+    const financialYearId = sessionStorage.getItem("financialYearId");
 
-    setVoucherNo(res.voucherNo);
+    if (!companyId || !financialYearId) {
+      toast.error("Company or Financial Year is not selected");
+      return;
+    }
 
-    // OR if using form state
-    // setForm(prev => ({
-    //   ...prev,
-    //   voucherNo: res.voucherNo,
-    // }));
+    const res = await apiHelper.get(
+      `/accountant/contra/generate-voucher?companyId=${companyId}&financialYearId=${financialYearId}`
+    );
 
+    console.log("Contra Voucher API:", res);
+
+    const voucherNo =
+      res?.data?.voucherNo ??
+      res?.voucherNo ??
+      "";
+
+    setVoucherNo(voucherNo);
   } catch (err) {
-    console.error(err);
+    console.error("Contra Voucher Error:", err);
   }
 };
   const openModal = () => {

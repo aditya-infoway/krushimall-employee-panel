@@ -523,7 +523,7 @@ const TractorPurchaseBill: React.FC<TractorPurchaseBillProps> = ({
   );
   const getAccounts = async () => {
     try {
-         const res = await apiHelper.get("/accounts?scope=all");
+         const res = await apiHelper.get("/accountant/accounts?scope=all");
 
       const accounts = res.data || [];
 
@@ -866,7 +866,7 @@ const TractorPurchaseBill: React.FC<TractorPurchaseBillProps> = ({
 
   const getParties = async () => {
     try {
-       const res = await apiHelper.get("/accounts?scope=all");
+       const res = await apiHelper.get("/accountant/accounts?scope=all");
 
   const accounts = Array.isArray(res.data?.data) ? res.data.data : res.data;
      

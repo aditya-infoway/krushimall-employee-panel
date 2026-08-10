@@ -560,19 +560,20 @@ const AccessoriesPurchaseBill: React.FC<AccessoriesPurchaseBillProps> = ({
   };
 
   // Get Bill Number
-  const getBillNo = async () => {
-    try {
-      const res = await apiHelper.get("/accessories-purchase/generate-bill-no");
-
-      setBillNo(res.billNo);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+const getBillNo = async () => {
+  try {
+    const res = await apiHelper.get(
+      `/accessories-purchase/generate-bill-no?companyId=${companyId}&financialYearId=${financialYearId}`
+    );
+    setBillNo(res.billNo);
+  } catch (error) {
+    console.error(error);
+  }
+};
   // Get Parties (Accounts)
   const getParties = async () => {
     try {
-        const res = await apiHelper.get("/accounts?scope=all");
+        const res = await apiHelper.get("/storemanager/account?scope=all");
 
       const accounts = Array.isArray(res.data?.data)
         ? res.data.data
@@ -605,7 +606,7 @@ const AccessoriesPurchaseBill: React.FC<AccessoriesPurchaseBillProps> = ({
   // Get Cash & Bank Accounts
   const getAccounts = async () => {
     try {
-      const res = await apiHelper.get("/accounts?scope=all");
+      const res = await apiHelper.get("/storemanager/account?scope=all");
       const accounts = Array.isArray(res.data?.data)
         ? res.data.data
         : Array.isArray(res.data)

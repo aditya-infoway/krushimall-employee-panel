@@ -1053,7 +1053,7 @@ function ReviewLeadSummaryStep({
   };
   const fetchAccounts = async () => {
     try {
-      const res = await apiHelper.get("/accounts");
+     const res = await apiHelper.get("/teamlead/account?scope=all");
 
       const data = Array.isArray(res.data)
         ? res.data
@@ -2188,7 +2188,7 @@ export function LeadDetailsModal({
 
   const fetchCustomers = async () => {
     try {
-      const res = await apiHelper.get("/accounts?scope=all");
+      const res = await apiHelper.get("/teamlead/account?scope=all");
 
       const data = Array.isArray(res.data)
         ? res.data
