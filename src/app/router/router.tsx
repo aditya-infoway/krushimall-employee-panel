@@ -24,7 +24,10 @@ const router = createBrowserRouter(
     },
   ],
   {
-    basename: import.meta.env.MODE === "capacitor" ? "/" : "/Employee",
+   basename:
+  import.meta.env.MODE === "capacitor"
+    ? "/"
+    : "/krushimall-employee",
   }
 );
 

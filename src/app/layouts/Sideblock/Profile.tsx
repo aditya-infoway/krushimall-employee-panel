@@ -14,12 +14,13 @@ import {
 import { TbCoins, TbUser, TbUsersGroup } from "react-icons/tb";
 import { Link } from "react-router";
 import { useAuthContext } from "@/app/contexts/auth/context";
+
 // Local Imports
 import { Avatar, AvatarDot, type AvatarProps, Button } from "@/components/ui";
-import { useEffect, useState } from "react";
 import apiHelper from "@/utils/apiHelper";
+
 // ----------------------------------------------------------------------
-import { storage } from "@/utils/jwt";
+
 interface LinkItem {
   id: string;
   title: string;
@@ -73,36 +74,16 @@ const links: LinkItem[] = [
 ];
 
 export function Profile() {
-  const { logout } = useAuthContext();
+  const { user, logout } = useAuthContext();
 
-const [employee, setEmployee] = useState<any>(null);
+  // user already comes from AuthContext (login response / sessionStorage authUser)
+  // no extra API call needed here — avoids the blank-popover-on-refresh issue
+  const employee = user as any;
 
-useEffect(() => {
-  fetchEmployee();
-}, []);
-
-const fetchEmployee = async () => {
-  try {
-   const token = sessionStorage.getItem("authToken");
-
-    if (!token) return;
-
-    const payload: any = JSON.parse(atob(token.split(".")[1]));
-    const id = payload.id;
-
-    const response = await apiHelper.get(`/employees/${id}`);
-
-    setEmployee(response.data);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-
-// const getBranchLogo = () => {
-//   if (!branch?.logo) return "/images/avatar/avatar-12.jpg";
-//   return apiHelper.getImageUrl(branch.logo);
-// };
+  const getEmployeeAvatar = () => {
+    if (!employee?.photo) return undefined;
+    return apiHelper.getImageUrl(employee.photo);
+  };
 
   return (
     <Popover className="relative flex">
@@ -110,8 +91,8 @@ const fetchEmployee = async () => {
         as={Avatar}
         size={9}
         role="button"
-        // src={getBranchLogo()} 
-
+        src={getEmployeeAvatar()}
+        alt="Profile"
         indicator={
           <AvatarDot
             color="success"
@@ -134,22 +115,24 @@ const fetchEmployee = async () => {
         >
           {({ close }: { close: () => void }) => (
             <>
+              {/* User Info */}
               <div className="dark:bg-dark-800 flex items-center gap-4 rounded-t-lg bg-gray-100 px-4 py-5">
-  <Avatar size={14}  />
-{/* src={getBranchLogo()} */}
-  <div className="flex flex-col">
-    <Link
-      className="hover:text-primary-600 focus:text-primary-600 dark:text-dark-100 dark:hover:text-primary-400 font-medium"
-      to="/settings/general"
-    >
-      {employee?.employeeName || "Employee"}
-    </Link>
+                <Avatar size={14} src={getEmployeeAvatar()} />
+                <div className="flex flex-col">
+                  <Link
+                    className="hover:text-primary-600 focus:text-primary-600 dark:text-dark-100 dark:hover:text-primary-400 font-medium"
+                    to="/settings/general"
+                  >
+                    {employee?.employeeName || "Employee"}
+                  </Link>
 
-    <p className="dark:text-dark-300 mt-1 text-xs text-gray-400">
-      {employee?.role || "-"}
-    </p>
-  </div>
-</div>
+                  <p className="dark:text-dark-300 mt-1 text-xs text-gray-400">
+                    {employee?.role || "-"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Navigation Links */}
               <div className="flex flex-col pt-2 pb-5">
                 {links.map((link) => (
                   <Link
@@ -175,6 +158,8 @@ const fetchEmployee = async () => {
                     </div>
                   </Link>
                 ))}
+
+                {/* Logout Button */}
                 <div className="px-4 pt-4">
                   <Button className="w-full gap-2" onClick={() => logout()}>
                     <ArrowLeftStartOnRectangleIcon className="size-4.5" />

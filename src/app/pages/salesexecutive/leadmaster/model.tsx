@@ -1035,7 +1035,7 @@ function ReviewLeadSummaryStep({
   const fetchProfessions = async () => {
     const res = await apiHelper.get("/professions");
 
-    console.log("Profession Response:", res.data);
+   
 
     const data = Array.isArray(res.data?.data)
       ? res.data.data
@@ -2130,7 +2130,7 @@ const totalSteps = isFinancePurchase ? 5 : 4;
   };
 
   const handleSubmit = async () => {
-    console.log("SUBMIT CLICKED");
+   
   if (
     !companyId ||
     !financialYearId
@@ -2142,7 +2142,7 @@ const totalSteps = isFinancePurchase ? 5 : 4;
   }
     if (reviewSummaryValidateRef.current) {
       const isValid = reviewSummaryValidateRef.current();
-      console.log("VALID:", isValid);
+     
       if (!isValid) return;
     }
 
@@ -2218,15 +2218,10 @@ marginMoney:
     : null,
       };
 
-      console.log("PAYLOAD", payload);
+    
 
-    const res = await apiHelper.post(
-  user?.role === "Sales Executive"
-    ? "/salesexecutive/lead"
-    : "/leads",
-  payload
-);
-      console.log("SUCCESS", res.data);
+    await apiHelper.post("/salesexecutive/lead", payload);
+    
 
       toast.success("Lead created successfully!");
       onClose();
@@ -2239,39 +2234,36 @@ marginMoney:
     }
   };
 
-  const handleCreateAccount = async (formData: AccountForm) => {
-    try {
-      const res = await apiHelper.post("/accounts", {
-        accountName: formData.accountName,
-        printName: formData.accountName,
-        mobile: formData.mobile,
-        country: formData.countryName,
-        countryCode: formData.countryCode,
-        state: formData.stateName,
-        stateCode: formData.stateCode,
-        district: formData.district,
-        city: formData.city,
-        address1: formData.address,
-        panCard: formData.panCard,
-        aadharNo: formData.aadharCard,
-        group: "Customer",
-        drCr: "Dr",
-      });
+ const handleCreateAccount = async (formData: AccountForm) => {
+  try {
+    await apiHelper.post("/accounts", {
+      accountName: formData.accountName,
+      printName: formData.accountName,
+      mobile: formData.mobile,
+      country: formData.countryName,
+      countryCode: formData.countryCode,
+      state: formData.stateName,
+      stateCode: formData.stateCode,
+      district: formData.district,
+      city: formData.city,
+      address1: formData.address,
+      panCard: formData.panCard,
+      aadharNo: formData.aadharCard,
+      group: "Customer",
+      drCr: "Dr",
+    });
 
-      console.log("Create Response:", res.data);
+    toast.success("Account created successfully!");
 
-      toast.success("Account created successfully!");
-
-      await fetchCustomers();
-      setIsCreateAccountOpen(false);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to create account. Please try again.",
-      );
-    }
-  };
+    await fetchCustomers();
+    setIsCreateAccountOpen(false);
+  } catch (error: any) {
+    toast.error(
+      error?.response?.data?.message ||
+        "Failed to create account. Please try again."
+    );
+  }
+};
 
   const fetchCustomers = async () => {
     try {
@@ -2348,7 +2340,7 @@ const fetchFinances = async () => {
           ? res.data
           : [];
 
-      console.log("API Response:", data);
+    
 
       setShowroomVariants(data);
     } catch (err) {
@@ -2381,7 +2373,7 @@ const fetchFinances = async () => {
       (v: any) => Number(v.modelId) === Number(model.id),
     );
 
-    console.log("Filtered Showroom Variants:", filtered);
+  
 
     setFilteredShowroomVariants(
       filtered.map((item: any) => ({
@@ -2561,7 +2553,7 @@ const fetchFinances = async () => {
                         data={customers}
                         value={selectedCustomer}
                         onChange={(val: any) => {
-                          console.log(val);
+                         
                           setSelectedCustomer(val);
 
                           if (errors.customer) {

@@ -5,7 +5,10 @@ import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(({ mode }) => ({
-  base: mode === "capacitor" ? "/" : "/Employee/",
+  base:
+    mode === "capacitor"
+      ? "/"
+      : "/krushimall-employee/",
   plugins: [react(), svgr(), tailwindcss()],
   resolve: {
     alias: {

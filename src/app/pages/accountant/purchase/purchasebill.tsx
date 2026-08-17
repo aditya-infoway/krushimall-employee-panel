@@ -264,8 +264,12 @@ const TractorPurchaseBill: React.FC<TractorPurchaseBillProps> = ({
 
   const isEdit = !!id;
   const [date, setDate] = useState(() => {
-    const d = new Date();
-    return d.toISOString().split("T")[0];
+    const today = new Date();
+
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
+      2,
+      "0",
+    )}-${String(today.getDate()).padStart(2, "0")}`;
   });
   const [billNo, setBillNo] = useState("");
   const [terms, setTerms] = useState<TermsType>("Credit");
@@ -1117,18 +1121,23 @@ const getBillNo = async () => {
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Date
             </label>
-            <DatePicker
-              value={date}
+             <DatePicker
+              placeholder="Select Date"
               options={{ disableMobile: true }}
+              value={date ? [new Date(date)] : []}
               onChange={(selectedDates: Date[]) => {
-                const val = selectedDates[0];
-                setDate(
-                  typeof val === "string"
-                    ? val
-                    : val?.toISOString?.()?.split?.("T")?.[0] || "",
-                );
+                if (selectedDates && selectedDates[0]) {
+                  const selectedDate = selectedDates[0];
+
+                  setDate(
+                    `${selectedDate.getFullYear()}-${String(
+                      selectedDate.getMonth() + 1,
+                    ).padStart(2, "0")}-${String(
+                      selectedDate.getDate(),
+                    ).padStart(2, "0")}`,
+                  );
+                }
               }}
-              placeholder="Select date..."
               className="w-full"
             />
           </div>

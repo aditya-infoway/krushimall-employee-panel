@@ -2,47 +2,105 @@ import { Capacitor } from "@capacitor/core";
 import { jwtDecode } from "jwt-decode";
 import axiosInstance from "./axios";
 
-const storage = Capacitor.isNativePlatform() ? localStorage : sessionStorage;
+const storage = Capacitor.isNativePlatform()
+  ? localStorage
+  : sessionStorage;
 
-const isTokenValid = (authToken: string): boolean => {
+export const EMPLOYEE_TOKEN_KEY = "employeeAuthToken";
+
+export const EMPLOYEE_LOGIN_PATH =
+  Capacitor.isNativePlatform()
+    ? "/login"
+    : "/krushimall-employee/login";
+
+const isTokenValid = (
+  authToken: string,
+): boolean => {
   try {
-    const decoded: { exp?: number } = jwtDecode(authToken);
+    const decoded: { exp?: number } =
+      jwtDecode(authToken);
+
     if (!decoded.exp) {
-      console.error("Token does not contain an expiration time.");
+      console.error(
+        "Token does not contain an expiration time.",
+      );
+
       return false;
     }
 
-    const currentTime = Date.now() / 1000; // Current time in seconds since epoch
+    const currentTime = Date.now() / 1000;
+
     return decoded.exp > currentTime;
   } catch (err) {
-    console.error("Failed to decode token:", err);
+    console.error(
+      "Failed to decode token:",
+      err,
+    );
+
     return false;
   }
 };
 
-const setSession = (authToken?: string | null): void => {
-  if (typeof authToken === "string" && authToken.trim() !== "") {
-    // Store token — localStorage on app, sessionStorage on web
-    storage.setItem("authToken", authToken);
+const setSession = (
+  authToken?: string | null,
+): void => {
+  if (
+    typeof authToken === "string" &&
+    authToken.trim() !== ""
+  ) {
+    storage.setItem(
+      EMPLOYEE_TOKEN_KEY,
+      authToken,
+    );
 
-    axiosInstance.defaults.headers.common.Authorization = `Bearer ${authToken}`;
+    axiosInstance.defaults.headers.common.Authorization =
+      `Bearer ${authToken}`;
   } else {
-    // Remove token
-    storage.removeItem("authToken");
+    storage.removeItem(
+      EMPLOYEE_TOKEN_KEY,
+    );
 
-    delete axiosInstance.defaults.headers.common.Authorization;
+    delete axiosInstance.defaults.headers
+      .common.Authorization;
   }
 };
 
-axiosInstance.interceptors.request.use((config) => {
-  const authToken = storage.getItem("authToken");
-  if (authToken && !isTokenValid(authToken)) {
-    storage.removeItem("authToken");
-    delete axiosInstance.defaults.headers.common.Authorization;
-    window.location.href = "/login";
-    return Promise.reject("Session expired");
-  }
-  return config;
-});
+// Check token before request
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const authToken =
+      storage.getItem(EMPLOYEE_TOKEN_KEY);
 
-export { isTokenValid, setSession, storage };
+    if (
+      authToken &&
+      !isTokenValid(authToken)
+    ) {
+      storage.removeItem(
+        EMPLOYEE_TOKEN_KEY,
+      );
+
+      delete axiosInstance.defaults.headers
+        .common.Authorization;
+
+      window.location.href =
+        EMPLOYEE_LOGIN_PATH;
+
+      return Promise.reject(
+        new Error("Session expired"),
+      );
+    }
+
+    if (authToken) {
+      config.headers.Authorization =
+        `Bearer ${authToken}`;
+    }
+
+    return config;
+  },
+);
+
+export {
+  isTokenValid,
+  setSession,
+  storage,
+};

@@ -364,15 +364,7 @@ const getCompany = () => {
       "financialYearId",
     );
 
-  console.log(
-    "SAVED COMPANY ID:",
-    savedCompanyId,
-  );
-
-  console.log(
-    "SAVED FINANCIAL YEAR ID:",
-    savedFinancialYearId,
-  );
+ 
 
   if (savedCompanyId) {
     setCompanyId(
@@ -388,7 +380,7 @@ const getCompany = () => {
 };
   const fetchPaymentAccounts = async () => {
     try {
-      const response = await apiHelper.get("/accounts");
+      const response = await apiHelper.get("/teamlead/account?scope=all");
 
       const accounts = Array.isArray(response.data)
         ? response.data
@@ -396,7 +388,7 @@ const getCompany = () => {
           ? response.data
           : [];
 
-      console.log("ALL ACCOUNTS:", accounts);
+    
 
       const cashAccounts = accounts
         .filter((item: any) => {
@@ -430,9 +422,7 @@ const getCompany = () => {
 
       setBankAccountOptions(bankAccounts);
 
-      console.log("CASH ACCOUNTS:", cashAccounts);
-
-      console.log("BANK ACCOUNTS:", bankAccounts);
+     
     } catch (error) {
       console.error("GET ACCOUNT ERROR:", error);
     }
@@ -458,11 +448,13 @@ const getCompany = () => {
     getBankers();
     fetchPaymentAccounts();
   }, []);
-  const fetchVehicleInventory = async () => {
+   const fetchVehicleInventory = async () => {
   try {
-    const res = await apiHelper.get(
-      "/purchases/tractor-inventory",
-    );
+ 
+
+    const res = await apiHelper.get("/teamlead/tractor-inventory");
+
+  
 
     const data = Array.isArray(res.data?.data)
       ? res.data.data
@@ -470,75 +462,49 @@ const getCompany = () => {
         ? res.data
         : [];
 
-    const mappedVehicles = data
-      // Remove already booked chassis
+  
+
+    const verifiedVehicles = data.filter(
+      (item: any) =>
+        String(item.status ?? "").trim().toUpperCase() === "VERIFIED",
+    );
+
+   
+
+    const mappedVehicles = verifiedVehicles
       .filter(
         (item: any) =>
-          String(item.status ?? "")
-            .trim()
-            .toLowerCase() !== "booked",
+          String(item.status ?? "").trim().toLowerCase() !== "booked",
       )
       .map((item: any) => ({
-        id: String(
-          item.id ??
-            item.tractorId ??
-            item.purchaseItemId,
-        ),
+        id: String(item.id ?? item.tractorId ?? item.purchaseItemId),
 
-        chassisNo:
-          item.chassisNo ?? "",
+        chassisNo: String(item.chassisNo ?? "").trim(),
 
-        batteryNo:
-          item.batteryNo ?? "",
+        batteryNo: item.batteryNo ?? "",
 
-        keyNo:
-          item.keyNo ??
-          item.keyNumber ??
-          "",
+        keyNo: item.keyNo ?? item.keyNumber ?? "",
 
-        engineNo:
-          item.engineNo ??
-          item.motorNo ??
-          "",
+        engineNo: item.engineNo ?? item.motorNo ?? "",
 
-        inwardDate:
-          item.inwardDate ??
-          item.inWardDate ??
-          "",
+        inwardDate: item.inwardDate ?? item.inWardDate ?? "",
 
-        ageDay:
-          item.ageDay ??
-          item.ageday ??
-          null,
+        ageDay: item.ageDay ?? item.ageday ?? null,
 
-        model:
-          item.model ??
-          item.modelName ??
-          "",
+        model: item.model ?? item.modelName ?? "",
 
-        variant:
-          item.variant ??
-          item.variantName ??
-          "",
+        variant: item.variant ?? item.variantName ?? "",
 
-        colour:
-          item.colour ??
-          item.color ??
-          "",
+        colour: item.colour ?? item.color ?? "",
 
-        // Keep inventory status
-        status:
-          item.status ?? "",
+        status: item.status ?? "",
       }));
 
-    setVehicleOptions(
-      mappedVehicles,
-    );
+   
+
+    setVehicleOptions(mappedVehicles);
   } catch (error) {
-    console.error(
-      "GET TRACTOR INVENTORY ERROR:",
-      error,
-    );
+    console.error("❌ GET TRACTOR INVENTORY ERROR:", error);
   }
 };
   const totalValue = 0;
@@ -564,7 +530,7 @@ const getCompany = () => {
         status: item.status ?? "",
       }));
 
-      console.log("FINANCE OPTIONS:", mappedFinances);
+    
 
       setFinanceOptions(mappedFinances);
     } catch (error) {
@@ -586,7 +552,7 @@ const getCompany = () => {
 
         const response = await apiHelper.get(`/leads/${id}`);
 
-        console.log("CREATE ORDER LEAD RESPONSE:", response.data);
+   
 
         const lead = response.data?.data || response.data;
        setGrandTotal(String(Number(lead?.quotationGrandTotal) || 0));
@@ -1080,10 +1046,7 @@ useEffect(() => {
       delivery,
     };
 
-    console.log(
-      "CREATE ORDER PAYLOAD:",
-      payload,
-    );
+  
 
     // =====================================
     // CREATE ORDER API
@@ -1094,10 +1057,7 @@ useEffect(() => {
   payload,
 );
 
-    console.log(
-      "CREATE ORDER RESPONSE:",
-      response.data,
-    );
+   
 
     // Success toaster
     toast.success(
@@ -1337,7 +1297,7 @@ useEffect(() => {
                 </label>
 
                 <Select
-                  options={matchingVehicleOptions}
+                  options={vehicleOptions}
                   value={
                     matchingVehicleOptions.find(
                       (vehicle: any) =>

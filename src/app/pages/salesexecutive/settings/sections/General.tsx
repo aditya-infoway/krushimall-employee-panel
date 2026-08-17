@@ -64,11 +64,11 @@ const fetchEmployee = async () => {
   try {
     setLoading(true);
 
-    console.log("Employee ID:", id);
+    
 
     const response = await apiHelper.get(`/employees/${id}`);
 
-    console.log("Response:", response);
+    
 
     setEmployee(response.data);   // ✅ not response.data.data
   } catch (err) {
