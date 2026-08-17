@@ -3,7 +3,7 @@ import { useEffect, useReducer, ReactNode } from "react";
 
 // Local Imports
 import apiHelper from "@/utils/apiHelper";
-import { isTokenValid, setSession, storage } from "@/utils/jwt";
+import { isTokenValid, setSession, storage, EMPLOYEE_TOKEN_KEY } from "@/utils/jwt";
 import { AuthProvider as AuthContext, AuthContextType } from "./context";
 import { User } from "@/@types/user";
 
@@ -82,7 +82,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const init = async () => {
       try {
-        const authToken = storage.getItem("authToken");
+        // ✅ same key jo setSession() use karta hai (jwt.ts)
+        const authToken = storage.getItem(EMPLOYEE_TOKEN_KEY);
 
         if (authToken && isTokenValid(authToken)) {
           setSession(authToken);
@@ -99,6 +100,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             },
           });
         } else {
+          // token invalid ya missing -> storage bhi clean kar do
+          setSession(null);
+          storage.removeItem("authUser");
+
           dispatch({
             type: "INITIALIZE",
             payload: { isAuthenticated: false, user: null },
@@ -121,7 +126,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string;
   }): Promise<boolean> => {
     dispatch({ type: "LOGIN_REQUEST" });
-    console.log("Credentials:", credentials);
 
     try {
       const response = await apiHelper.post("/employees/login", credentials);
@@ -129,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { token, user } = response;
 
       setSession(token);
-     storage.setItem("authUser", JSON.stringify(user));
+      storage.setItem("authUser", JSON.stringify(user));
       // Save complete user/branch
 
       dispatch({

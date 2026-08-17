@@ -1,4 +1,5 @@
 // Import Dependencies
+import React from "react";
 import {
   Popover,
   PopoverButton,
@@ -12,20 +13,21 @@ import {
 } from "@heroicons/react/24/outline";
 import { TbCoins, TbUser, TbUsersGroup } from "react-icons/tb";
 import { Link } from "react-router";
+import { useAuthContext } from "@/app/contexts/auth/context";
 
 // Local Imports
-import { Avatar, AvatarDot, Button } from "@/components/ui";
-import { ColorType } from "@/constants/app";
-import { useEffect, useState } from "react";
+import { Avatar, AvatarDot, type AvatarProps, Button } from "@/components/ui";
 import apiHelper from "@/utils/apiHelper";
-// Define Link Types
+
+// ----------------------------------------------------------------------
+
 interface LinkItem {
   id: string;
   title: string;
   description: string;
   to: string;
-  Icon: React.ElementType;
-  color: ColorType;
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  color: AvatarProps["initialColor"];
 }
 
 const links: LinkItem[] = [
@@ -71,81 +73,62 @@ const links: LinkItem[] = [
   },
 ];
 
-// ----------------------------------------------------------------------
-
 export function Profile() {
-  // const [company, setCompany] = useState<any>(null);
+  const { user, logout } = useAuthContext();
 
-  const [branch, setBranch] = useState<any>(null);
+  // user already comes from AuthContext (login response / sessionStorage authUser)
+  // no extra API call needed here — avoids the blank-popover-on-refresh issue
+  const employee = user as any;
 
-  useEffect(() => {
-    fetchBranch();
-  }, []);
-
-  const fetchBranch = async () => {
-    try {
-      const savedUser = JSON.parse(localStorage.getItem("branchUser") || "{}");
-      const id = savedUser?.id;
-
-      if (!id) {
-        console.warn("No branch ID found");
-        return;
-      }
-
-      const response = await apiHelper.get(`/branch/${id}`);
-      const branchData = response?.data || response;
-      setBranch(branchData);
-    } catch (error) {
-      console.error("Failed to fetch branch:", error);
-    }
-  };
-
-  const getBranchLogo = () => {
-    if (!branch?.logo) return "/images/avatar/avatar-12.jpg";
-    return apiHelper.getImageUrl(branch.logo);
+  const getEmployeeAvatar = () => {
+    if (!employee?.photo) return undefined;
+    return apiHelper.getImageUrl(employee.photo);
   };
 
   return (
-    <Popover className="relative">
+    <Popover className="relative flex">
       <PopoverButton
         as={Avatar}
-        size={12}
+        size={9}
         role="button"
-        src={getBranchLogo()}
+        src={getEmployeeAvatar()}
         alt="Profile"
         indicator={
-          <AvatarDot color="success" className="ltr:right-0 rtl:left-0" />
+          <AvatarDot
+            color="success"
+            className="-m-0.5 size-3 ltr:right-0 rtl:left-0"
+          />
         }
         className="cursor-pointer"
       />
       <Transition
         enter="duration-200 ease-out"
-        enterFrom="translate-x-2 opacity-0"
-        enterTo="translate-x-0 opacity-100"
+        enterFrom="translate-y-2 opacity-0"
+        enterTo="translate-y-0 opacity-100"
         leave="duration-200 ease-out"
-        leaveFrom="translate-x-0 opacity-100"
-        leaveTo="translate-x-2 opacity-0"
+        leaveFrom="translate-y-0 opacity-100"
+        leaveTo="translate-y-2 opacity-0"
       >
         <PopoverPanel
-          anchor={{ to: "right end", gap: 12 }}
+          anchor={{ to: "bottom end", gap: 12 }}
           className="border-gray-150 shadow-soft dark:border-dark-600 dark:bg-dark-700 z-70 flex w-64 flex-col rounded-lg border bg-white transition dark:shadow-none"
         >
-          {({ close }) => (
+          {({ close }: { close: () => void }) => (
             <>
               {/* User Info */}
               <div className="dark:bg-dark-800 flex items-center gap-4 rounded-t-lg bg-gray-100 px-4 py-5">
-                <Avatar size={14} src={getBranchLogo()} />
-                <div>
+                <Avatar size={14} src={getEmployeeAvatar()} />
+                <div className="flex flex-col">
                   <Link
-                    className="hover:text-primary-600 focus:text-primary-600 dark:text-dark-100 dark:hover:text-primary-400 dark:focus:text-primary-400 text-base font-medium text-gray-700"
+                    className="hover:text-primary-600 focus:text-primary-600 dark:text-dark-100 dark:hover:text-primary-400 font-medium"
                     to="/settings/general"
                   >
-                    {branch?.branchName || "Branch"}
+                    {employee?.employeeName || "Employee"}
                   </Link>
 
-                  {/* <p className="mt-0.5 text-xs text-gray-400 dark:text-dark-300">
-                    Product Designer
-                  </p> */}
+                  <p className="dark:text-dark-300 mt-1 text-xs text-gray-400">
+                    {employee?.role || "-"}
+                  </p>
                 </div>
               </div>
 
@@ -155,7 +138,7 @@ export function Profile() {
                   <Link
                     key={link.id}
                     to={link.to}
-                    onClick={() => close()}
+                    onClick={close}
                     className="group dark:hover:bg-dark-600 dark:focus:bg-dark-600 flex items-center gap-3 px-4 py-2 tracking-wide outline-hidden transition-all hover:bg-gray-100 focus:bg-gray-100"
                   >
                     <Avatar
@@ -178,7 +161,7 @@ export function Profile() {
 
                 {/* Logout Button */}
                 <div className="px-4 pt-4">
-                  <Button className="w-full gap-2">
+                  <Button className="w-full gap-2" onClick={() => logout()}>
                     <ArrowLeftStartOnRectangleIcon className="size-4.5" />
                     <span>Logout</span>
                   </Button>

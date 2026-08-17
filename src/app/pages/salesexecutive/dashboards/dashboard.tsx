@@ -73,7 +73,7 @@ interface DataTableRow {
 export default function Dashboard() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [rowsPerPage] = React.useState(10);
-  console.log("Dashboard Mounted");
+ 
   // Separate toggle states for each table
   const [modelToggle, setModelToggle] = React.useState<string>("hot");
   const [sourceToggle, setSourceToggle] = React.useState<string>("hot");
@@ -90,7 +90,7 @@ const fetchFollowUpCounts = async () => {
   try {
     const res = await apiHelper.get("/followup/board");
 
-    console.log(res);
+  
 
     const counts = res.counts || {
       Pending: 0,

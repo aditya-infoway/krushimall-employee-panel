@@ -363,10 +363,14 @@ const AccessoriesPurchaseBill: React.FC<AccessoriesPurchaseBillProps> = ({
   const { id } = useParams();
   const isEdit = !!id;
   // ── Main Bill State ────────────────────────────────────────────────────
-  const [date, setDate] = useState(() => {
-    const d = new Date();
-    return d.toISOString().split("T")[0];
-  });
+ const [date, setDate] = useState(() => {
+  const d = new Date();
+
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+    2,
+    "0",
+  )}-${String(d.getDate()).padStart(2, "0")}`;
+});
   const [terms, setTerms] = useState<TermsType>("Credit");
   const [cashAccount, setCashAccount] = useState("");
   const [bankAccount, setBankAccount] = useState("");
@@ -1436,19 +1440,24 @@ drCr:
               Date
             </label>
             <DatePicker
-              value={date}
-              options={{ disableMobile: true }}
-              onChange={(selectedDates: Date[]) => {
-                const val = selectedDates[0];
-                setDate(
-                  typeof val === "string"
-                    ? val
-                    : val?.toISOString?.()?.split?.("T")?.[0] || "",
-                );
-              }}
-              placeholder="Select date..."
-              className="w-full"
-            />
+                       placeholder="Select Date"
+                       options={{ disableMobile: true }}
+                       value={date ? [new Date(date)] : []}
+                       onChange={(selectedDates: Date[]) => {
+                         if (selectedDates && selectedDates[0]) {
+                           const selectedDate = selectedDates[0];
+         
+                           setDate(
+                             `${selectedDate.getFullYear()}-${String(
+                               selectedDate.getMonth() + 1,
+                             ).padStart(2, "0")}-${String(
+                               selectedDate.getDate(),
+                             ).padStart(2, "0")}`,
+                           );
+                         }
+                       }}
+                       className="w-full"
+                     />
           </div>
 
           <div className="col-span-1">

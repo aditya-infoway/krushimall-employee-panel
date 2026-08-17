@@ -383,19 +383,26 @@ export function TestDriveModal({
                   <label className="dark:text-dark-200 text-sm font-medium text-gray-700">
                     From Time <span className="text-red-500">*</span>
                   </label>
-                  <Controller
-                    name="testDriveFromTime"
-                    control={control}
-                    rules={validationRules.testDriveFromTime}
-                    render={({ field, fieldState }) => (
-                      <Timepicker
-                        value={field.value}
-                        onChange={(val) => field.onChange(val)}
-                        placeholder="Select time"
-                        error={fieldState.error?.message}
-                      />
-                    )}
-                  />
+                 <Controller
+  name="testDriveFromTime"
+  control={control}
+  rules={validationRules.testDriveFromTime}
+  render={({ field, fieldState }) => (
+    <div>
+      <Timepicker
+        value={field.value}
+        onChange={(val) => field.onChange(val)}
+        placeholder="Select time"
+      />
+
+      {fieldState.error?.message && (
+        <p className="mt-1 text-xs text-red-500">
+          {fieldState.error.message}
+        </p>
+      )}
+    </div>
+  )}
+/>
                 </div>
 
                 {/* Test Drive To Time */}
@@ -404,18 +411,25 @@ export function TestDriveModal({
                     To Time <span className="text-red-500">*</span>
                   </label>
                   <Controller
-                    name="testDriveToTime"
-                    control={control}
-                    rules={validationRules.testDriveToTime}
-                    render={({ field, fieldState }) => (
-                      <Timepicker
-                        value={field.value}
-                        onChange={(val) => field.onChange(val)}
-                        placeholder="Select time"
-                        error={fieldState.error?.message}
-                      />
-                    )}
-                  />
+  name="testDriveToTime"
+  control={control}
+  rules={validationRules.testDriveToTime}
+  render={({ field, fieldState }) => (
+    <div>
+      <Timepicker
+        value={field.value}
+        onChange={(val) => field.onChange(val)}
+        placeholder="Select time"
+      />
+
+      {fieldState.error?.message && (
+        <p className="mt-1 text-xs text-red-500">
+          {fieldState.error.message}
+        </p>
+      )}
+    </div>
+  )}
+/>
                 </div>
 
                 {/* Duration */}
