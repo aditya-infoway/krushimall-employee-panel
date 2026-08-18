@@ -10,6 +10,7 @@ import {
 import { RiFileExcel2Fill } from "react-icons/ri";
 import { DatePicker } from "@/components/shared/form/Datepicker";
 import apiHelper from "@/utils/apiHelper";
+import { Search } from "lucide-react";
 import { Group } from "@/app/layouts/Sideblock/Sidebar/Menu/Group";
 // interface Transaction {
 //   id: number;
@@ -23,6 +24,7 @@ import { Group } from "@/app/layouts/Sideblock/Sidebar/Menu/Group";
 // }
 
 const LedgerDetails: React.FC = () => {
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,11 +53,26 @@ const LedgerDetails: React.FC = () => {
   const [appliedFromDate, setAppliedFromDate] = useState<any>(null);
   const [appliedToDate, setAppliedToDate] = useState<any>(null);
   // Pagination
-  const totalItems = transactions.length;
-  const totalPages = Math.ceil(totalItems / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const currentData = transactions.slice(startIndex, endIndex);
+// NEW: filter transactions by the search box
+const filteredTransactions = transactions.filter((t) => {
+  const q = search.toLowerCase();
+  return (
+    String(t.particulars ?? "").toLowerCase().includes(q) ||
+    String(t.voucherNo ?? "").toLowerCase().includes(q) ||
+    String(t.billNo ?? "").toLowerCase().includes(q) ||
+    String(t.type ?? "").toLowerCase().includes(q)
+  );
+});
+
+// Pagination — now based on filteredTransactions
+const totalItems = filteredTransactions.length;
+const totalPages = Math.ceil(totalItems / rowsPerPage);
+const startIndex = (currentPage - 1) * rowsPerPage;
+const endIndex = startIndex + rowsPerPage;
+const currentData = filteredTransactions.slice(startIndex, endIndex);
+useEffect(() => {
+  setCurrentPage(1);
+}, [search]);
   const [accountInfo, setAccountInfo] = useState({
     accountName: "",
     group: "",
@@ -330,7 +347,17 @@ const LedgerDetails: React.FC = () => {
           </div>
         </div>
       </div>
-
+{/* Search */}
+<div className="relative mb-5 w-full max-w-md">
+  <Search className="absolute top-1/2 left-3 size-4.5 -translate-y-1/2 text-gray-400" />
+  <input
+    type="text"
+    placeholder="Search particulars, voucher, type..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="dark:border-dark-500 dark:bg-dark-800 w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-sm outline-none"
+  />
+</div>
       {/* Table */}
       <div className="dark:bg-dark-700 dark:border-dark-600 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
