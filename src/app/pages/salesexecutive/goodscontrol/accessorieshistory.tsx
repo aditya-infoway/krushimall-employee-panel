@@ -5,6 +5,7 @@ import {
   ArrowLeftIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import {
   Menu,
@@ -53,7 +54,7 @@ interface AccessoryDetails {
 const AccessoriesHistory = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-
+  const [search, setSearch] = useState("");
   const [rows, setRows] = useState<HistoryRow[]>([]);
   const [accessory, setAccessory] = useState<AccessoryDetails>({
     itemName: "-",
@@ -103,11 +104,44 @@ const AccessoriesHistory = () => {
   // PAGINATION
   // ------------------------------------------
 
-  const totalItems = rows.length;
+
+  const searchLower = search.trim().toLowerCase();
+
+  const filteredRows = rows.filter((row: HistoryRow) => {
+    if (!searchLower) return true;
+
+    return (
+      String(row.date ?? "")
+        .toLowerCase()
+        .includes(searchLower) ||
+      String(row.type ?? "")
+        .toLowerCase()
+        .includes(searchLower) ||
+      String(row.partyName ?? "")
+        .toLowerCase()
+        .includes(searchLower) ||
+      String(row.reference ?? "")
+        .toLowerCase()
+        .includes(searchLower) ||
+      String(row.qtyIn ?? "")
+        .toLowerCase()
+        .includes(searchLower) ||
+      String(row.qtyOut ?? "")
+        .toLowerCase()
+        .includes(searchLower)
+    );
+  });
+
+  const totalItems = filteredRows.length;
+
   const totalPages = Math.ceil(totalItems / itemsPerPage);
+
   const indexOfLastItem = currentPage * itemsPerPage;
+
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = rows.slice(indexOfFirstItem, indexOfLastItem);
+
+  const currentItems = filteredRows.slice(indexOfFirstItem, indexOfLastItem);
+
 
   // ------------------------------------------
   // CALCULATE STOCK SUMMARY
@@ -180,7 +214,18 @@ const AccessoriesHistory = () => {
             </p>
           </Card>
         </div> */}
-
+ <div className="relative mb-5 w-full max-w-md">
+          <MagnifyingGlassIcon className="absolute top-1/2 left-3 size-4.5 -translate-y-1/2 text-gray-400" />
+          <input
+            placeholder="Search leads..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="dark:border-dark-500 dark:bg-dark-800 w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-sm outline-none"
+          />
+        </div>
         {/* HISTORY TABLE */}
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">

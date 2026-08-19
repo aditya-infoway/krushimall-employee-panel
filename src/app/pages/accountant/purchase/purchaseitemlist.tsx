@@ -474,6 +474,13 @@ const PurchaseItemList: React.FC<PurchaseItemListProps> = ({ onAddItem }) => {
     setIsView(true);
     setShowDrawer(true);
   };
+  // FIXED: output format now matches the DatePicker's configured dateFormat "d-m-Y"
+const toLocalDateString = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${day}-${month}-${year}`;   // e.g. "20-06-2026"
+};
   return (
     <div className="relative min-h-screen space-y-6 p-4 pb-28 text-gray-900 md:p-6 dark:text-gray-100">
       {/* Header */}
@@ -1063,7 +1070,7 @@ const PurchaseItemList: React.FC<PurchaseItemListProps> = ({ onAddItem }) => {
                     <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                       MFG Date
                     </label>
-                    <DatePicker
+                     <DatePicker
                       placeholder="Select MFG Date"
                       disabled={isView}
                       options={{ disableMobile: true }}
@@ -1073,7 +1080,7 @@ const PurchaseItemList: React.FC<PurchaseItemListProps> = ({ onAddItem }) => {
                           const date = selectedDates[0];
                           const formattedDate =
                             date instanceof Date
-                              ? date.toISOString().split("T")[0]
+                              ? toLocalDateString(date)
                               : date;
                           setInwardData({
                             ...inwardData,
@@ -1274,7 +1281,7 @@ const PurchaseItemList: React.FC<PurchaseItemListProps> = ({ onAddItem }) => {
                           const date = selectedDates[0];
                           const formattedDate =
                             date instanceof Date
-                              ? date.toISOString().split("T")[0]
+                              ? toLocalDateString(date)
                               : date;
                           setInwardData({
                             ...inwardData,
@@ -1294,7 +1301,7 @@ const PurchaseItemList: React.FC<PurchaseItemListProps> = ({ onAddItem }) => {
                     <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                       GRN Record Date
                     </label>
-                    <DatePicker
+                     <DatePicker
                       placeholder="Select GRN Record Date"
                       options={{ disableMobile: true }}
                       value={inwardData.grnRecordDate}
@@ -1304,7 +1311,7 @@ const PurchaseItemList: React.FC<PurchaseItemListProps> = ({ onAddItem }) => {
                           const date = selectedDates[0];
                           const formattedDate =
                             date instanceof Date
-                              ? date.toISOString().split("T")[0]
+                              ? toLocalDateString(date)
                               : date;
                           setInwardData({
                             ...inwardData,

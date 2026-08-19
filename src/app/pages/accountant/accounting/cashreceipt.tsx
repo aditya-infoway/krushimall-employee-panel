@@ -9,9 +9,7 @@ import {
   ChevronDown,
   X,
   Plus,
-
   Printer,
- 
 } from "lucide-react";
 import {
   Dialog,
@@ -100,7 +98,7 @@ const initialForm = {
   narration: "",
   createdType: "",
   createdBy: "",
-  leadNo: "",
+  leadNo: null as any,
   jobCardNo: "",
 };
 
@@ -131,31 +129,31 @@ export default function CashReceipt() {
   const [filterDateFrom, setFilterDateFrom] = useState<any>(null);
   const [filterDateTo, setFilterDateTo] = useState<any>(null);
 
-const filteredRows = rows.filter((r) => {
-  const matchesSearch = Object.values(r).some((v) =>
-    String(v).toLowerCase().includes(search.toLowerCase()),
-  );
-  const matchesType = filterType === "All" || r.type === filterType;
+  const filteredRows = rows.filter((r) => {
+    const matchesSearch = Object.values(r).some((v) =>
+      String(v).toLowerCase().includes(search.toLowerCase()),
+    );
+    const matchesType = filterType === "All" || r.type === filterType;
 
-  // NEW: date range filter — handles DatePicker returning either a Date or an array
-  const rowDate = new Date(r.date);
-  rowDate.setHours(0, 0, 0, 0);
+    // NEW: date range filter — handles DatePicker returning either a Date or an array
+    const rowDate = new Date(r.date);
+    rowDate.setHours(0, 0, 0, 0);
 
-  const rawFrom = Array.isArray(filterDateFrom)
-    ? filterDateFrom[0]
-    : filterDateFrom;
-  const fromDate = rawFrom ? new Date(rawFrom) : null;
-  if (fromDate) fromDate.setHours(0, 0, 0, 0);
+    const rawFrom = Array.isArray(filterDateFrom)
+      ? filterDateFrom[0]
+      : filterDateFrom;
+    const fromDate = rawFrom ? new Date(rawFrom) : null;
+    if (fromDate) fromDate.setHours(0, 0, 0, 0);
 
-  const rawTo = Array.isArray(filterDateTo) ? filterDateTo[0] : filterDateTo;
-  const toDate = rawTo ? new Date(rawTo) : null;
-  if (toDate) toDate.setHours(23, 59, 59, 999);
+    const rawTo = Array.isArray(filterDateTo) ? filterDateTo[0] : filterDateTo;
+    const toDate = rawTo ? new Date(rawTo) : null;
+    if (toDate) toDate.setHours(23, 59, 59, 999);
 
-  const matchesDateFrom = !fromDate || rowDate >= fromDate;
-  const matchesDateTo = !toDate || rowDate <= toDate;
+    const matchesDateFrom = !fromDate || rowDate >= fromDate;
+    const matchesDateTo = !toDate || rowDate <= toDate;
 
-  return matchesSearch && matchesType && matchesDateFrom && matchesDateTo;
-});
+    return matchesSearch && matchesType && matchesDateFrom && matchesDateTo;
+  });
   const [companyId, setCompanyId] = useState<number | null>(null);
   const [financialYearId, setFinancialYearId] = useState<number | null>(null);
   const totalItems = filteredRows.length;
@@ -165,12 +163,12 @@ const filteredRows = rows.filter((r) => {
   const currentItems = filteredRows.slice(indexOfFirstItem, indexOfLastItem);
   const [leadOptions, setLeadOptions] = useState<any[]>([]);
   // Type filter options — dynamically built from actual rows data, no hardcoding
-const typeFilterOptions = [
-  { id: "All", name: "All Types" },
-  ...Array.from(new Set(rows.map((r) => r.type).filter(Boolean))).map(
-    (type) => ({ id: type, name: type }),
-  ),
-];
+  const typeFilterOptions = [
+    { id: "All", name: "All Types" },
+    ...Array.from(new Set(rows.map((r) => r.type).filter(Boolean))).map(
+      (type) => ({ id: type, name: type }),
+    ),
+  ];
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -193,26 +191,26 @@ const typeFilterOptions = [
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-const getLeads = async () => {
-  try {
-    const res = await apiHelper.get("/leads/pending"); // ✅ endpoint change
+  const getLeads = async () => {
+    try {
+      const res = await apiHelper.get("/leads/pending"); // ✅ endpoint change
 
-    const leads = res.data || [];
+      const leads = res.data || [];
 
-    const options = leads.map((item: any) => ({
-      value: item.id,
-      label: `${item.quotationNo} - ${item.customer?.accountName || ""}`,
-      quotationNo: item.quotationNo,
-      customerName: item.customer?.accountName || "",
-      mobile: item.customer?.mobile || "",
-      customerId: item.customer?.id,
-    }));
+      const options = leads.map((item: any) => ({
+        value: item.id,
+        label: `${item.quotationNo} - ${item.customer?.accountName || ""}`,
+        quotationNo: item.quotationNo,
+        customerName: item.customer?.accountName || "",
+        mobile: item.customer?.mobile || "",
+        customerId: item.customer?.id,
+      }));
 
-    setLeadOptions(options);
-  } catch (err) {
-    console.log(err);
-  }
-};
+      setLeadOptions(options);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   useEffect(() => {
     getLeads();
   }, []);
@@ -257,38 +255,33 @@ const getLeads = async () => {
   useEffect(() => {
     getCashReceipts();
   }, []);
-const getVoucherNo = async () => {
-  try {
-    const companyId = sessionStorage.getItem("companyId");
-    const financialYearId = sessionStorage.getItem("financialYearId");
+  const getVoucherNo = async () => {
+    try {
+      const companyId = sessionStorage.getItem("companyId");
+      const financialYearId = sessionStorage.getItem("financialYearId");
 
-    if (!companyId || !financialYearId) {
-      toast.error("Company or Financial Year is not selected");
-      return;
+      if (!companyId || !financialYearId) {
+        toast.error("Company or Financial Year is not selected");
+        return;
+      }
+
+      const res = await apiHelper.get(
+        `/cash-receipt/voucher?companyId=${companyId}&financialYearId=${financialYearId}`,
+      );
+
+      const voucherNo = res?.data?.voucherNo ?? res?.voucherNo ?? "";
+
+      setForm((prev) => ({
+        ...prev,
+        voucherNo,
+      }));
+    } catch (err) {
+      console.error("Cash Receipt Voucher Error:", err);
     }
-
-    const res = await apiHelper.get(
-      `/cash-receipt/voucher?companyId=${companyId}&financialYearId=${financialYearId}`
-    );
-
-  
-
-    const voucherNo =
-      res?.data?.voucherNo ??
-      res?.voucherNo ??
-      "";
-
-    setForm((prev) => ({
-      ...prev,
-      voucherNo,
-    }));
-  } catch (err) {
-    console.error("Cash Receipt Voucher Error:", err);
-  }
-};
+  };
   const getAccounts = async () => {
     try {
-       const res = await apiHelper.get("/accountant/accounts?scope=all");
+      const res = await apiHelper.get("/accountant/accounts?scope=all");
 
       const accounts = res.data.data || res.data || [];
 
@@ -305,17 +298,17 @@ const getVoucherNo = async () => {
         }));
 
       // Opposite Accounts
-          const opp = accounts
-  .filter((a: any) => a.group !== "Cash-in-Hand")
-  .map((a: any) => ({
-    value: a.id,
-    label: a.accountName,
-    mobile: a.mobile,
-    openingBalance: a.openingBalance,
-    balance: a.closingBalance,
-    balanceType: a.drCr,
-    group: a.group,
-  }));
+      const opp = accounts
+        .filter((a: any) => a.group !== "Cash-in-Hand")
+        .map((a: any) => ({
+          value: a.id,
+          label: a.accountName,
+          mobile: a.mobile,
+          openingBalance: a.openingBalance,
+          balance: a.closingBalance,
+          balanceType: a.drCr,
+          group: a.group,
+        }));
 
       setCashAccounts(cash);
       setOppAccounts(opp);
@@ -338,34 +331,34 @@ const getVoucherNo = async () => {
     setShowDrawer(true);
   };
 
-  const handleEdit = (item: CashReceipt) => {
-    setEditId(item.id);
-    setForm({
-      type: item.type,
-      cashAccount:
-        CASH_ACCOUNTS.find((a) => a.value === item.cashAccount) || null,
-      voucherNo: item.voucherNo,
-      date: item.date,
-      oppAccount: OPP_ACCOUNTS.find((a) => a.value === item.oppAccount) || null,
-      amount: String(item.amount),
-      narration: item.narration,
-      createdType: item.createdType,
-      createdBy: item.createdBy,
-      leadNo: item.leadNo || "",
-      jobCardNo: item.jobCardNo || "",
-    });
-    setErrors({});
-    setShowDrawer(true);
-  };
+  // const handleEdit = (item: CashReceipt) => {
+  //   setEditId(item.id);
+  //   setForm({
+  //     type: item.type,
+  //     cashAccount:
+  //       CASH_ACCOUNTS.find((a) => a.value === item.cashAccount) || null,
+  //     voucherNo: item.voucherNo,
+  //     date: item.date,
+  //     oppAccount: OPP_ACCOUNTS.find((a) => a.value === item.oppAccount) || null,
+  //     amount: String(item.amount),
+  //     narration: item.narration,
+  //     createdType: item.createdType,
+  //     createdBy: item.createdBy,
+  //     leadNo: item.leadNo || "",
+  //     jobCardNo: item.jobCardNo || "",
+  //   });
+  //   setErrors({});
+  //   setShowDrawer(true);
+  // };
 
-  const handleDelete = (id: number) => {
-    setRows(rows.filter((row) => row.id !== id));
-  };
+  // const handleDelete = (id: number) => {
+  //   setRows(rows.filter((row) => row.id !== id));
+  // };
 
-  const handleBulkDelete = () => {
-    setRows(rows.filter((row) => !selectedIds.includes(row.id)));
-    setSelectedIds([]);
-  };
+  // const handleBulkDelete = () => {
+  //   setRows(rows.filter((row) => !selectedIds.includes(row.id)));
+  //   setSelectedIds([]);
+  // };
 
   // Add after OPP_ACCOUNTS
   const LEADS = [
@@ -445,7 +438,10 @@ const getVoucherNo = async () => {
         type: form.type,
         cashAccountId: form.cashAccount.value,
         oppAccountId: form.oppAccount.value,
-        leadId: form.type === "Lead" ? Number(form.leadNo) : null,
+        leadId:
+          form.type === "Lead" && form.leadNo
+            ? Number(form.leadNo.value)
+            : null,
         amount: Number(form.amount),
         narration: form.narration,
       };
@@ -496,7 +492,9 @@ const getVoucherNo = async () => {
   }, [filterType, filterDateFrom, filterDateTo, search]);
   const downloadExcel = async () => {
     try {
-      const blob = await apiHelper.getBlob("/accountant/cash-receipt/export/excel");
+      const blob = await apiHelper.getBlob(
+        "/accountant/cash-receipt/export/excel",
+      );
 
       const url = window.URL.createObjectURL(blob);
 
@@ -516,7 +514,9 @@ const getVoucherNo = async () => {
 
   const handlePrint = async (item: CashReceipt) => {
     try {
-      const blob = await apiHelper.getBlob(`/accountant/cash-receipt/${item.id}/print`);
+      const blob = await apiHelper.getBlob(
+        `/accountant/cash-receipt/${item.id}/print`,
+      );
       const url = window.URL.createObjectURL(blob);
       window.open(url, "_blank");
       setTimeout(() => window.URL.revokeObjectURL(url), 60000);
@@ -601,16 +601,15 @@ const getVoucherNo = async () => {
               <label className="dark:text-dark-200 mb-1.5 block text-sm font-medium text-gray-700">
                 Type
               </label>
-               <Listbox
-    data={typeFilterOptions}
-    value={
-      typeFilterOptions.find((o) => o.id === filterType) ||
-      typeFilterOptions[0]
-    }
-    onChange={(opt: any) => setFilterType(opt.id)}
-    displayField="name"
-  />
-
+              <Listbox
+                data={typeFilterOptions}
+                value={
+                  typeFilterOptions.find((o) => o.id === filterType) ||
+                  typeFilterOptions[0]
+                }
+                onChange={(opt: any) => setFilterType(opt.id)}
+                displayField="name"
+              />
             </div>
             <div>
               <label className="dark:text-dark-200 mb-1.5 block text-sm font-medium text-gray-700">
@@ -700,16 +699,16 @@ const getVoucherNo = async () => {
                         className="size-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
                       />
                     </td>
-                    <td className="py-3 px-3 text-sm font-medium text-gray-500">
+                    <td className="px-3 py-3 text-sm font-medium text-gray-500">
                       {indexOfFirstItem + index + 1}
                     </td>
-                    <td className="py-3 px-3 text-sm whitespace-nowrap text-gray-900 dark:text-gray-400">
+                    <td className="px-3 py-3 text-sm whitespace-nowrap text-gray-900 dark:text-gray-400">
                       {new Date(item.date).toLocaleDateString("en-GB")}
                     </td>
-                    <td className="py-3 px-3 text-sm font-medium whitespace-nowrap text-gray-900 dark:text-gray-400">
+                    <td className="px-3 py-3 text-sm font-medium whitespace-nowrap text-gray-900 dark:text-gray-400">
                       {item.voucherNo}
                     </td>
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="px-3 py-3 whitespace-nowrap">
                       <span
                         className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
                           item.type === "Manual"
@@ -722,28 +721,28 @@ const getVoucherNo = async () => {
                         {item.type}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-400">
+                    <td className="px-3 py-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-400">
                       {item.cashAccount}
                     </td>
-                    <td className="py-3 px-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-400">
+                    <td className="px-3 py-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-400">
                       {item.oppAccount}
                     </td>
-                    <td className="py-3 px-3 text-sm font-semibold whitespace-nowrap text-gray-900 dark:text-gray-400">
+                    <td className="px-3 py-3 text-sm font-semibold whitespace-nowrap text-gray-900 dark:text-gray-400">
                       ₹
                       {item.amount.toLocaleString("en-IN", {
                         minimumFractionDigits: 2,
                       })}
                     </td>
-                    <td className="py-3 px-3 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
+                    <td className="px-3 py-3 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                       {item.narration}
                     </td>
-                    <td className="py-3 px-3 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
+                    <td className="px-3 py-3 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                       {item.createdType}
                     </td>
-                    <td className="py-3 px-3 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
+                    <td className="px-3 py-3 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                       {item.createdBy}
                     </td>
-                    <td className="py-3 px-3 text-center whitespace-nowrap">
+                    <td className="px-3 py-3 text-center whitespace-nowrap">
                       <button
                         type="button"
                         onClick={() => handlePrint(item)}
@@ -968,7 +967,7 @@ const getVoucherNo = async () => {
                   </div>
 
                   {/* Right side - Combobox */}
-                     <div className="w-full  md:w-110 lg:w-110 ">
+                  <div className="w-full md:w-110 lg:w-110">
                     {form.type === "Lead" && (
                       <Combobox
                         data={leadOptions}
@@ -977,17 +976,22 @@ const getVoucherNo = async () => {
                         onChange={(selected: any) => {
                           const customerAccount = oppAccounts.find(
                             (acc: any) =>
-                              Number(acc.value) === Number(selected.customerId),
+                              Number(acc.value) ===
+                              Number(selected?.customerId),
                           );
 
                           setForm((prev) => ({
                             ...prev,
-                            leadNo: selected, // object store કરો
+                            leadNo: selected,
+                            leadId: selected?.value
+                              ? Number(selected.value)
+                              : null,
                             oppAccount: customerAccount || null,
                           }));
                         }}
                         placeholder="Search Quotation No / Customer"
                         searchFields={["quotationNo", "customerName", "mobile"]}
+                        error={errors.leadNo}
                         columns={[
                           {
                             header: "Quotation No",
