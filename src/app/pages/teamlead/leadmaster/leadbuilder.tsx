@@ -44,6 +44,7 @@ import { toast } from "sonner";
 import { ConfirmModal } from "@/components/shared/ConfirmModal";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { useAuthContext } from "@/app/contexts/auth/context";
+import {PaymentDrawer} from "./payment";
 type Lead = {
   id: number;
   customerName: string;
@@ -103,20 +104,67 @@ const { user } = useAuthContext();
   const [confirmState, setConfirmState] = useState<
     "pending" | "success" | "error"
   >("pending");
+  const [showPaymentDrawer, setShowPaymentDrawer] = useState(false);
+const [selectedPaymentLeadId, setSelectedPaymentLeadId] = useState<number | undefined>(
+  undefined,
+);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   // Filter leads based on search
   const navigate = useNavigate();
   const filteredData = leadData.filter((lead: any) => {
-    const searchLower = search.toLowerCase();
+  const searchLower = search.trim().toLowerCase();
 
-    return (
-      lead.customer?.accountName?.toLowerCase().includes(searchLower) ||
-      lead.customer?.mobileNumber?.includes(search) ||
-      lead.model?.modelName?.toLowerCase().includes(searchLower)
-    );
-  });
+  return (
+    // Customer Name
+    String(lead.customer?.accountName ?? "")
+      .toLowerCase()
+      .includes(searchLower) ||
+
+    // Mobile
+    String(lead.customer?.mobile ?? "")
+      .toLowerCase()
+      .includes(searchLower) ||
+
+    // City
+    String(lead.customer?.city ?? lead.city ?? "")
+      .toLowerCase()
+      .includes(searchLower) ||
+
+    // Model
+    String(lead.model?.modelName ?? "")
+      .toLowerCase()
+      .includes(searchLower) ||
+
+    // Variant
+    String(
+      lead.variant?.variantName ??
+      lead.showroomVariant?.variantName ??
+      ""
+    )
+      .toLowerCase()
+      .includes(searchLower) ||
+
+    // Colour
+    String(
+      lead.colour?.colourName ??
+      lead.color?.colourName ??
+      ""
+    )
+      .toLowerCase()
+      .includes(searchLower) ||
+
+    // Executive
+    String(
+      lead.executive?.employeeName ??
+      lead.executiveName ??
+      ""
+    )
+      .toLowerCase()
+      .includes(searchLower)
+  );
+});
 
   // Pagination
   const totalItems = filteredData.length;
@@ -180,9 +228,10 @@ const { user } = useAuthContext();
   const handleFollowUp = (id: number) => {
     navigate(`/leadmaster/Followup/${id}`);
   };
-  const handlePayment = (id: number) => {
-    console.log(`Payment for lead ${id}...`);
-  };
+ const handlePayment = (id: number) => {
+  setSelectedPaymentLeadId(id);
+  setShowPaymentDrawer(true);
+};
 
   // const handleSendQuotation = (id: number) => {
   //   console.log(`Send quotation for lead ${id}...`);
@@ -258,6 +307,7 @@ const handleDeliveryChallan = (leadId: number) => {
             <THead className="dark:border-dark-600 dark:bg-dark-700/60 border-b border-gray-200 bg-gray-100">
               <Tr>
                 <Th className="w-12"># ID</Th>
+                    <Th className="w-45 min-w-45">quotation No</Th>
                 <Th className="w-45 min-w-45">Customer Detail</Th>
                 <Th className="w-45 min-w-45">Vehicle Detail</Th>
                 <Th className="w-45 min-w-45">Purchase Detail</Th>
@@ -269,9 +319,10 @@ const handleDeliveryChallan = (leadId: number) => {
               </Tr>
             </THead>
             <TBody>
-              {currentItems.map((lead) => (
+              {currentItems.map((lead,index) => (
                 <Tr key={lead.id} className="dark:border-dark-700 border-b">
-                  <Td className="font-bold">{lead.id}</Td>
+                 <Td className="font-bold">     {(currentPage - 1) * itemsPerPage + index + 1}</Td>
+                  <Td className="font-bold">{lead.quotationNo}</Td>
 
                   <Td className="text-xs">
                     <div className="space-y-1">
@@ -686,7 +737,18 @@ const handleDeliveryChallan = (leadId: number) => {
         isOpen={showLeadModal}
         onClose={() => setShowLeadModal(false)}
       />
-
+<PaymentDrawer
+  isOpen={showPaymentDrawer}
+  onClose={() => {
+    setShowPaymentDrawer(false);
+    setSelectedPaymentLeadId(undefined);
+  }}
+  leadId={selectedPaymentLeadId}
+  customerName={
+    leadData.find((lead) => lead.id === selectedPaymentLeadId)
+      ?.customer?.accountName
+  }
+/>
       {/* Add Test Drive Modal */}
       <TestDriveModal
         isOpen={showTestDriveModal}
