@@ -159,8 +159,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     setSession(null);
     storage.removeItem("authUser");
-    sessionStorage.removeItem("companyId");
-    sessionStorage.removeItem("financialYearId");
+    localStorage.removeItem("companyId");
+    localStorage.removeItem("financialYearId");
 
     dispatch({ type: "LOGOUT" });
   };

@@ -277,41 +277,41 @@ export default function Selectcomapny() {
       display: "none",
     }),
   };
-  const handleSelectCompany = (company: Company) => {
-    const financialYear = company.financialYears?.[0];
+ const handleSelectCompany = (company: Company) => {
+  const financialYear = company.financialYears?.[0];
 
-    if (!financialYear) {
-      alert("Financial year not found");
-      return;
-    }
+  if (!financialYear) {
+    alert("Financial year not found");
+    return;
+  }
 
-    sessionStorage.setItem("companyId", String(company.id));
-    sessionStorage.setItem("companyName", company.companyName);
-    sessionStorage.setItem("financialYearId", String(financialYear.id));
-    sessionStorage.setItem("financialYear", financialYear.financialYear);
+  localStorage.setItem("companyId", String(company.id));
+  localStorage.setItem("companyName", company.companyName);
+  localStorage.setItem("financialYearId", String(financialYear.id));
+  localStorage.setItem("financialYear", financialYear.financialYear);
 
-    const role = user?.role?.replace(/\s+/g, "").toUpperCase();
+  const role = user?.role?.replace(/\s+/g, "").toUpperCase();
 
-    switch (role) {
-      case "SALESEXECUTIVE":
-        navigate("/dashboards/dashboard");
-        break;
+  switch (role) {
+    case "SALESEXECUTIVE":
+      navigate("/dashboards/dashboard");
+      break;
 
-      case "ACCOUNTANT":
-        navigate("/dashboards/dashboard");
-        break;
+    case "ACCOUNTANT":
+      navigate("/dashboards/dashboard");
+      break;
 
-      case "STOREMANAGER":
-        navigate("/dashboards/dashboard");
-        break;
-      case "TEAMLEAD":
-        navigate("/dashboards/dashboard");
-        break;
+    case "STOREMANAGER":
+      navigate("/dashboards/dashboard");
+      break;
+    case "TEAMLEAD":
+      navigate("/dashboards/dashboard");
+      break;
 
-      default:
-        navigate("/");
-    }
-  };
+    default:
+      navigate("/");
+  }
+};
   return (
     <div className="dark:bg-dark-900 flex h-screen bg-gray-100">
       {/* Left Side */}

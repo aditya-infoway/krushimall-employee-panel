@@ -353,11 +353,11 @@ const Order: React.FC = () => {
   };
 const getCompany = () => {
   const savedCompanyId =
-    sessionStorage.getItem("companyId") ||
+    localStorage.getItem("companyId") ||
     localStorage.getItem("companyId");
 
   const savedFinancialYearId =
-    sessionStorage.getItem(
+    localStorage.getItem(
       "financialYearId",
     ) ||
     localStorage.getItem(

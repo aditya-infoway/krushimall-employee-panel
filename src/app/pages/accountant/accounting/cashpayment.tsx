@@ -254,8 +254,8 @@ export default function CashPayment() {
   };
 const getVoucherNo = async () => {
   try {
-    const companyId = sessionStorage.getItem("companyId");
-    const financialYearId = sessionStorage.getItem("financialYearId");
+    const companyId = localStorage.getItem("companyId");
+    const financialYearId = localStorage.getItem("financialYearId");
 
    
     if (!companyId || !financialYearId) {

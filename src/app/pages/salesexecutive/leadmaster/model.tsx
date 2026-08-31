@@ -1980,11 +1980,11 @@ const { user } = useAuthContext();
 
   // const [executives, setExecutives] = useState<OptionType[]>([]);
  const companyId = Number(
-  sessionStorage.getItem("companyId"),
+  localStorage.getItem("companyId"),
 );
 
 const financialYearId = Number(
-  sessionStorage.getItem(
+  localStorage.getItem(
     "financialYearId",
   ),
 );

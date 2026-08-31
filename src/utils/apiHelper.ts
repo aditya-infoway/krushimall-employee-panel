@@ -25,33 +25,36 @@ api.interceptors.request.use((config) => {
 export const getBaseUrl = () => {
   const apiUrl =
     import.meta.env.VITE_API_URL ||
-    "http://31.97.237.210/krushimall-api/api";
-// "http://localhost:5001/api";
+    // "http://31.97.237.210/krushimall-api/api";
+"http://localhost:5001/api";
   return apiUrl.replace(/\/api\/?$/, "");
 };
 
 const apiHelper = {
-  getImageUrl: (
-    imagePath: string | null | undefined,
-  ): string => {
-    if (!imagePath) return "";
+getImageUrl: (
+  imagePath: string | null | undefined,
+): string => {
+  if (!imagePath) return "";
 
-    // Full URL / base64
-    if (
-      imagePath.startsWith("http") ||
-      imagePath.startsWith("data:")
-    ) {
-      return imagePath;
-    }
+  // Full URL / base64
+  if (
+    imagePath.startsWith("http") ||
+    imagePath.startsWith("data:")
+  ) {
+    return imagePath;
+  }
 
-    // /uploads/file.jpg
-    if (imagePath.startsWith("/")) {
-      return `${getBaseUrl()}${imagePath}`;
-    }
+  // Normalize: remove any leading slash
+  const cleanPath = imagePath.replace(/^\/+/, "");
 
-    // filename only
-    return `${getBaseUrl()}/uploads/${imagePath}`;
-  },
+  // Already has "uploads/" prefix (e.g. "uploads/file.jpg") — don't add it again
+  if (cleanPath.startsWith("uploads/")) {
+    return `${getBaseUrl()}/${cleanPath}`;
+  }
+
+  // filename only
+  return `${getBaseUrl()}/uploads/${cleanPath}`;
+},
 
   get: async (
     url: string,

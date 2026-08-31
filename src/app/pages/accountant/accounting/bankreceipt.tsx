@@ -369,6 +369,14 @@ const getBankReceipts = async () => {
 
 const getVoucherNo = async () => {
   try {
+     const companyId = localStorage.getItem("companyId");
+        const financialYearId = localStorage.getItem("financialYearId");
+    
+       
+        if (!companyId || !financialYearId) {
+          toast.error("Company or Financial Year is not selected");
+          return;
+        }
     const res = await apiHelper.get(
       `/bank-receipt/voucher?companyId=${companyId}&financialYearId=${financialYearId}`
     );

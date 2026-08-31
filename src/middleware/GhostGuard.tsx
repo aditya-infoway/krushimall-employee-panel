@@ -7,15 +7,15 @@ import { useAuthContext } from "@/app/contexts/auth/context";
 
 // ----------------------------------------------------------------------
 
-
 export default function GhostGuard() {
   const outlet = useOutlet();
-  const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated, isInitialized } = useAuthContext();
 
- 
+  if (!isInitialized) {
+    return null;
+  }
 
   if (isAuthenticated) {
-  
     return <Navigate to="/select-company" replace />;
   }
 
