@@ -315,7 +315,7 @@ const handleDeliveryChallan = (leadId: number) => {
                 <Th className="w-45 min-w-45 text-center">Process / Billing</Th>
                  <Th className="w-45 min-w-45 text-center">Print</Th>
                 <Th className="w-40 min-w-40">Status</Th>
-                <Th className="w-20 text-center">Action</Th>
+                {/* <Th className="w-20 text-center">Action</Th> */}
               </Tr>
             </THead>
             <TBody>
@@ -424,14 +424,22 @@ const handleDeliveryChallan = (leadId: number) => {
                         >
                           Send Quotation
                         </button>
-
-                        <button
-                          onClick={() => handleEditQuotation(lead.id)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full border border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer"
-                          title="Edit Quotation"
-                        >
-                          <PencilSquareIcon className="h-4 w-4" />
-                        </button>
+ <button
+  onClick={() => handleEditQuotation(lead.id)}
+  disabled={!!lead.order}
+  className={`flex h-7 w-7 items-center justify-center rounded border ${
+    lead.order
+      ? "dark:border-dark-500 dark:bg-dark-600 dark:text-dark-300 cursor-not-allowed border-gray-300 bg-gray-300 text-gray-500"
+      : "dark:text-blue-400 dark:hover:bg-blue-900/20 cursor-pointer border-blue-500 text-blue-600 hover:bg-blue-50"
+  }`}
+  title={
+    lead.order
+      ? "Quotation cannot be edited after Order is created"
+      : "Edit Quotation"
+  }
+>
+  <PencilSquareIcon className="h-3 w-3" />
+</button>
                       </div>
                       {/* Test Drive: Red border */}
                       <button
@@ -564,7 +572,7 @@ const handleDeliveryChallan = (leadId: number) => {
                   </Td>
 
                   {/* Action Column */}
-                  <Td>
+                  {/* <Td>
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => handleEdit(lead.id)}
@@ -581,7 +589,7 @@ const handleDeliveryChallan = (leadId: number) => {
                         <TrashIcon className="size-4" />
                       </button>
                     </div>
-                  </Td>
+                  </Td> */}
                 </Tr>
               ))}
               {currentItems.length === 0 && (

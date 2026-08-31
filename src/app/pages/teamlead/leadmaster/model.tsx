@@ -1932,9 +1932,9 @@ export function LeadDetailsModal({
   const [customers, setCustomers] = useState<OptionType[]>([]);
 
   // const [executives, setExecutives] = useState<OptionType[]>([]);
-  const companyId = Number(sessionStorage.getItem("companyId"));
+  const companyId = Number(localStorage.getItem("companyId"));
 
-  const financialYearId = Number(sessionStorage.getItem("financialYearId"));
+  const financialYearId = Number(localStorage.getItem("financialYearId"));
   // const fetchExecutives = async () => {
   //   try {
   //     const res = await apiHelper.get("/employees");

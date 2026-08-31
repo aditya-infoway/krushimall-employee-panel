@@ -81,10 +81,9 @@ export function Profile() {
   const employee = user as any;
 
   const getEmployeeAvatar = () => {
-    if (!employee?.photo) return undefined;
-    return apiHelper.getImageUrl(employee.photo);
+    if (!employee?.profileImage) return undefined;
+    return apiHelper.getImageUrl(employee.profileImage);
   };
-
   return (
     <Popover className="relative flex">
       <PopoverButton

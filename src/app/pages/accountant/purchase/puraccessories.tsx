@@ -457,9 +457,9 @@ const AccessoriesPurchaseBill: React.FC<AccessoriesPurchaseBillProps> = ({
   const [accountForm, setAccountForm] = useState<NewAccountData>(emptyAccount);
   const [accountTouched, setAccountTouched] = useState(false);
   const [accessories, setAccessories] = useState<any[]>([]);
-  const companyId = sessionStorage.getItem("companyId");
+  const companyId = localStorage.getItem("companyId");
 
-  const financialYearId = sessionStorage.getItem("financialYearId");
+  const financialYearId = localStorage.getItem("financialYearId");
   const getPurchase = async () => {
     try {
       const res = await apiHelper.get(`/accountant/accessories-purchase/${id}`);
