@@ -471,7 +471,7 @@ const getVoucherNo = async () => {
   const handleExportExcel = async () => {
     try {
       const blob = await apiHelper.getBlob(
-        "/accountant/cash-payment/export/excel",
+        "/accountant/cash-payment/export",
       );
 
       const url = window.URL.createObjectURL(blob);
@@ -673,7 +673,7 @@ const getVoucherNo = async () => {
                       {item.voucherNo}
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
-                      <span className="bg-primary-500 inline-flex rounded-full px-2 py-0.5 text-xs font-semibold">
+                      <span className="bg-primary-500 inline-flex rounded-full px-2 py-0.5 text-xs font-semibold text-white">
                         {item.type}
                       </span>
                     </td>
