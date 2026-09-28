@@ -500,83 +500,36 @@ const Accessories = () => {
     { id: "Accessories", name: "Accessories" },
     { id: "Parts", name: "Parts" },
   ];
-  const customSelectStyles = {
-    control: (provided: any, state: any) => ({
-      ...provided,
-      backgroundColor: "transparent",
-      borderColor: state.isFocused
-        ? "var(--color-primary-600)"
-        : "var(--color-gray-700)",
-      borderRadius: "7px",
-      boxShadow: state.isFocused
-        ? "0 0 0 1px var(--color-primary-600)"
-        : "none",
-      minHeight: "30px",
-
-      "&:hover": {
-        borderColor: "var(--color-primary-500)",
-      },
-    }),
-
-    valueContainer: (provided: any) => ({
-      ...provided,
-      color: "var(--color-dark-100)",
-    }),
-
-    singleValue: (provided: any) => ({
-      ...provided,
-      color: "var(--color-dark-100)",
-    }),
-
-    input: (provided: any) => ({
-      ...provided,
-      color: "var(--color-dark-100)",
-    }),
-
-    placeholder: (provided: any) => ({
-      ...provided,
-      color: "var(--color-gray-400)",
-    }),
-
-    menu: (provided: any) => ({
-      ...provided,
-      backgroundColor: "var(--color-dark-700)",
-      border: "1px solid var(--color-primary-600)",
-      borderRadius: "12px",
-      overflow: "hidden",
-    }),
-
-    menuList: (provided: any) => ({
-      ...provided,
-      padding: 0,
-    }),
-
-    option: (provided: any, state: any) => ({
-      ...provided,
-      backgroundColor: state.isSelected
-        ? "var(--color-primary-600)"
-        : state.isFocused
-          ? "var(--color-primary-500)"
-          : "var(--color-dark-700)",
-      color: "#fff",
-      cursor: "pointer",
-    }),
-
-    dropdownIndicator: (provided: any, state: any) => ({
-      ...provided,
-      color: state.isFocused
-        ? "var(--color-primary-600)"
-        : "var(--color-gray-400)",
-    }),
-
-    clearIndicator: (provided: any) => ({
-      ...provided,
-      color: "var(--color-gray-400)",
-    }),
-
-    indicatorSeparator: () => ({
-      display: "none",
-    }),
+   const selectClassNames = {
+    control: ({ isFocused }: any) =>
+      `min-h-[42px] rounded-lg border bg-white px-1 text-sm dark:bg-transparent ${
+        isFocused
+          ? "border-primary-600 ring-1 ring-primary-600"
+          : "dark:border-dark-500 border-gray-300 hover:border-primary-500"
+      }`,
+    valueContainer: () => "gap-1 px-2 py-1",
+    placeholder: () => "text-gray-400",
+    input: () => "text-gray-900 dark:text-dark-100",
+    multiValue: () => "bg-primary-50 dark:bg-dark-600 rounded-md px-1.5 py-0.5",
+    multiValueLabel: () =>
+      "text-primary-700 dark:text-dark-100 text-xs font-medium",
+    multiValueRemove: () =>
+      "ml-1 rounded text-gray-500 hover:bg-red-100 hover:text-red-600 dark:text-dark-200",
+    menu: () =>
+      "dark:bg-dark-700 dark:border-dark-500 absolute z-50 mt-1 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg",
+    menuList: () => "p-1",
+    option: ({ isFocused, isSelected }: any) =>
+      `cursor-pointer rounded-md px-3 py-2 text-sm ${
+        isSelected
+          ? "bg-primary-50 text-primary-700 dark:bg-primary-600 dark:text-white"
+          : isFocused
+            ? "dark:bg-dark-600 bg-gray-100 text-gray-900 dark:text-white"
+            : "dark:text-dark-100 text-gray-700"
+      }`,
+    noOptionsMessage: () => "py-3 text-sm text-gray-400",
+    dropdownIndicator: () => "px-2 text-gray-400",
+    clearIndicator: () => "px-2 text-gray-400 hover:text-red-500",
+    indicatorSeparator: () => "hidden",
   };
   return (
     <div className="relative min-h-screen space-y-6 p-4 pb-28 text-gray-900 md:p-6 dark:text-gray-100">
@@ -1120,7 +1073,7 @@ const Accessories = () => {
                 </div>
 
                 {/* Content */}
-                <div className="grow space-y-4 overflow-y-auto p-4 sm:space-y-5 sm:p-5">
+                        <div className="grow space-y-4 overflow-y-auto p-4 pb-40 sm:space-y-5 sm:p-5 sm:pb-40">
                   {/* Type */}
                   {/* Type - Using Radio buttons */}
                   {/* Type - Using Radio buttons */}
@@ -1381,17 +1334,18 @@ const Accessories = () => {
                       </label>
                       <Select
                         isMulti
+                        unstyled
                         closeMenuOnSelect={false}
                         hideSelectedOptions={false}
-                        styles={customSelectStyles}
+                        menuPlacement="auto"
+                        maxMenuHeight={220}
+                        classNames={selectClassNames}
                         options={variantOptions}
                         value={selectedVariants}
                         onChange={(selected) =>
                           setSelectedVariants(selected as any[])
                         }
-                        components={{
-                          Option: CheckboxOption,
-                        }}
+                        components={{ Option: CheckboxOption }}
                         placeholder="Select Variant"
                       />
                       {errors.variant && (

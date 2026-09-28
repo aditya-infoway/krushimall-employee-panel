@@ -144,7 +144,7 @@ const Account = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [showFilterBar, setShowFilterBar] = useState(false);
-    const [selectedGroup, setSelectedGroup] = useState("All");
+  const [selectedGroup, setSelectedGroup] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmState, setConfirmState] = useState<
@@ -179,11 +179,9 @@ const Account = () => {
     setConfirmLoading(true);
     try {
       if (isBulkDelete) {
-       await Promise.all(
-  selectedIds.map((id) =>
-    apiHelper.delete(`/teamlead/account/${id}`)
-  ),
-);
+        await Promise.all(
+          selectedIds.map((id) => apiHelper.delete(`/teamlead/account/${id}`)),
+        );
         toast.success(`${selectedIds.length} accounts deleted successfully!`);
         setData((prev) =>
           prev.filter((item) => !selectedIds.includes(item.id)),
@@ -193,7 +191,7 @@ const Account = () => {
         setConfirmState("success");
       } else {
         if (deleteTargetId === null) return;
-       await apiHelper.delete(`/teamlead/account/${deleteTargetId}`);
+        await apiHelper.delete(`/teamlead/account/${deleteTargetId}`);
         toast.success("Account deleted successfully!");
         setData((prev) => prev.filter((item) => item.id !== deleteTargetId));
         setDeleteTargetId(null);
@@ -212,12 +210,12 @@ const Account = () => {
   };
 
   // Filter data based on search
- const searchText = search.trim().toLowerCase();
+  const searchText = search.trim().toLowerCase();
 
-const filteredData = data.filter((item: any) => {
-  const matchesSearch =
-    !searchText ||
-     String(item.accountName ?? "")
+  const filteredData = data.filter((item: any) => {
+    const matchesSearch =
+      !searchText ||
+      String(item.accountName ?? "")
         .toLowerCase()
         .includes(searchText) ||
       String(item.printName ?? "")
@@ -243,20 +241,28 @@ const filteredData = data.filter((item: any) => {
         .includes(searchText) ||
       String(item.country ?? "")
         .toLowerCase()
-        .includes(searchText)
+        .includes(searchText);
 
-  const matchesGroup =
-    selectedGroup === "All" ||
-    String(item.group ?? "").trim().toLowerCase() ===
-      String(selectedGroup ?? "").trim().toLowerCase();
+    const matchesGroup =
+      selectedGroup === "All" ||
+      String(item.group ?? "")
+        .trim()
+        .toLowerCase() ===
+        String(selectedGroup ?? "")
+          .trim()
+          .toLowerCase();
 
-  const matchesStatus =
-    selectedStatus === "All" ||
-    String(item.status ?? "").trim().toLowerCase() ===
-      String(selectedStatus ?? "").trim().toLowerCase();
+    const matchesStatus =
+      selectedStatus === "All" ||
+      String(item.status ?? "")
+        .trim()
+        .toLowerCase() ===
+        String(selectedStatus ?? "")
+          .trim()
+          .toLowerCase();
 
-  return matchesSearch && matchesGroup && matchesStatus;
-});
+    return matchesSearch && matchesGroup && matchesStatus;
+  });
   const totalItems = filteredData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -313,46 +319,46 @@ const filteredData = data.filter((item: any) => {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2 md:flex-nowrap">
-  {/* Left side - Filter and icons */}
-  <div className="flex items-center gap-2">
-    <button
-      type="button"
-      onClick={() => setShowFilterBar(!showFilterBar)}
-      className={`inline-flex items-center gap-1.5 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
-        showFilterBar
-          ? "bg-primary-50 border-primary-200 text-primary-600 dark:bg-dark-600 dark:border-dark-500 dark:text-white"
-          : "dark:bg-dark-800 dark:border-dark-500 dark:text-dark-200 border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-      }`}
-    >
-      <FunnelIcon className="size-4.5" />
-      <span className="hidden sm:inline">Filter</span>
-    </button>
+          {/* Left side - Filter and icons */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowFilterBar(!showFilterBar)}
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
+                showFilterBar
+                  ? "bg-primary-50 border-primary-200 text-primary-600 dark:bg-dark-600 dark:border-dark-500 dark:text-white"
+                  : "dark:bg-dark-800 dark:border-dark-500 dark:text-dark-200 border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              <FunnelIcon className="size-4.5" />
+              <span className="hidden sm:inline">Filter</span>
+            </button>
 
-    <button
-      type="button"
-      className="dark:bg-dark-800 dark:border-dark-500 dark:text-dark-200 inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50"
-    >
-      <RiFileExcel2Fill className="text-lg text-green-500" />
-    </button>
+            <button
+              type="button"
+              className="dark:bg-dark-800 dark:border-dark-500 dark:text-dark-200 inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50"
+            >
+              <RiFileExcel2Fill className="text-lg text-green-500" />
+            </button>
 
-    <button
-      type="button"
-      className="dark:bg-dark-800 dark:border-dark-500 dark:text-dark-200 inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50"
-    >
-      <RiFilePdfFill className="text-lg text-red-500" />
-    </button>
-  </div>
+            <button
+              type="button"
+              className="dark:bg-dark-800 dark:border-dark-500 dark:text-dark-200 inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50"
+            >
+              <RiFilePdfFill className="text-lg text-red-500" />
+            </button>
+          </div>
 
-  {/* Right side - Add Account button */}
-  <Button
-    color="primary"
-    onClick={handleAdd}
-    className="whitespace-nowrap"
-  >
-    <PlusIcon className="mr-1.5 size-4.5" />
-    Add Account
-  </Button>
-</div>
+          {/* Right side - Add Account button */}
+          <Button
+            color="primary"
+            onClick={handleAdd}
+            className="whitespace-nowrap"
+          >
+            <PlusIcon className="mr-1.5 size-4.5" />
+            Add Account
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -378,29 +384,29 @@ const filteredData = data.filter((item: any) => {
               <span className="dark:text-dark-200 text-sm font-medium text-gray-700">
                 Account Type
               </span>
-               <Combobox
-  data={accountGroupOptions}
-  value={
-    accountGroupOptions.find(
-      (option) => option.value === selectedGroup
-    ) || accountGroupOptions[0]
-  }
-  displayField="label"
-  searchFields={["label", "value"]}
-  placeholder="Search account group..."
-  onChange={(option: any) => {
-    const value = option?.value ?? "All";
+              <Combobox
+                data={accountGroupOptions}
+                value={
+                  accountGroupOptions.find(
+                    (option) => option.value === selectedGroup,
+                  ) || accountGroupOptions[0]
+                }
+                displayField="label"
+                searchFields={["label", "value"]}
+                placeholder="Search account group..."
+                onChange={(option: any) => {
+                  const value = option?.value ?? "All";
 
-    setSelectedGroup(value);
-    setCurrentPage(1);
-  }}
-/>
+                  setSelectedGroup(value);
+                  setCurrentPage(1);
+                }}
+              />
             </div>
             <div className="flex flex-col gap-1">
               <span className="dark:text-dark-200 text-sm font-medium text-gray-700">
                 Status
               </span>
-               <Combobox
+              <Combobox
                 data={statusOptions}
                 value={
                   statusOptions.find(
@@ -525,10 +531,10 @@ const filteredData = data.filter((item: any) => {
                       {item.state}
                     </Td>
                     <Td className="dark:text-dark-200 py-4 text-gray-600">
-                       {item.employee?.employeeName ||
-    item.createdByBranch?.branchName ||
-    item.createdBy ||
-    "-"}
+                      {item.employee?.employeeName ||
+                        item.createdByBranch?.branchName ||
+                        item.createdBy ||
+                        "-"}
                     </Td>
                     <Td className="dark:text-dark-200 py-4 text-gray-600">
                       {item.createdType}

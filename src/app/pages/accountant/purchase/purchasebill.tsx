@@ -527,7 +527,7 @@ const TractorPurchaseBill: React.FC<TractorPurchaseBillProps> = ({
   );
   const getAccounts = async () => {
     try {
-         const res = await apiHelper.get("/accountant/accounts?scope=all");
+      const res = await apiHelper.get("/accountant/accounts?scope=all");
 
       const accounts = res.data || [];
 
@@ -783,7 +783,6 @@ const TractorPurchaseBill: React.FC<TractorPurchaseBillProps> = ({
 
   const handleCreateAccount = async () => {
     try {
-   
       const required: (keyof NewAccountData)[] = [
         "accountName",
         "mobile",
@@ -838,7 +837,7 @@ const TractorPurchaseBill: React.FC<TractorPurchaseBillProps> = ({
               ? accountForm.drCr
               : null,
       });
-    
+
       const account = res.data;
 
       if (!account?.id) {
@@ -870,10 +869,10 @@ const TractorPurchaseBill: React.FC<TractorPurchaseBillProps> = ({
 
   const getParties = async () => {
     try {
-       const res = await apiHelper.get("/accountant/accounts?scope=all");
+      const res = await apiHelper.get("/accountant/accounts?scope=all");
 
-  const accounts = Array.isArray(res.data?.data) ? res.data.data : res.data;
-     
+      const accounts = Array.isArray(res.data?.data) ? res.data.data : res.data;
+
       const list = accounts
         .filter(
           (acc: any) =>
@@ -995,9 +994,9 @@ const TractorPurchaseBill: React.FC<TractorPurchaseBillProps> = ({
       return;
     }
     if (!purchaseBillNo.trim()) {
-    toast.error("Purchase Bill No is required");
-    return;
-  }
+      toast.error("Purchase Bill No is required");
+      return;
+    }
     if (!partyId) {
       toast.error("Please select Party Name");
       return;
@@ -1088,16 +1087,16 @@ const TractorPurchaseBill: React.FC<TractorPurchaseBillProps> = ({
       navigate("/purchase/tractor");
     }
   };
-const getBillNo = async () => {
-  try {
-    const res = await apiHelper.get(
-      `/purchases/generate-bill-no?companyId=${companyId}&financialYearId=${financialYearId}`
-    );
-    setBillNo(res.billNo || "");
-  } catch (error) {
-    console.error(error);
-  }
-};
+  const getBillNo = async () => {
+    try {
+      const res = await apiHelper.get(
+        `/purchases/generate-bill-no?companyId=${companyId}&financialYearId=${financialYearId}`,
+      );
+      setBillNo(res.billNo || "");
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="bg-white shadow-sm dark:bg-gray-800">
@@ -1108,7 +1107,7 @@ const getBillNo = async () => {
           </h1>
           <button
             onClick={handleBack}
-            className="bg-primary-500 hover:bg-primary-600 cursor-pointer inline-flex w-full items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors sm:w-auto sm:px-5"
+            className="bg-primary-500 hover:bg-primary-600 inline-flex w-full cursor-pointer items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors sm:w-auto sm:px-5"
           >
             <ArrowLeftIcon className="mr-1.5 size-4" />
             Back
@@ -1121,7 +1120,7 @@ const getBillNo = async () => {
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Date
             </label>
-             <DatePicker
+            <DatePicker
               placeholder="Select Date"
               options={{ disableMobile: true }}
               value={date ? [new Date(date)] : []}
@@ -1152,15 +1151,15 @@ const getBillNo = async () => {
                 termsOptions.find((t) => t.value === terms) || termsOptions[0]
               }
               onChange={(val: any) => {
-    const selectedTerm = val.value as TermsType;
+                const selectedTerm = val.value as TermsType;
 
-    setTerms(selectedTerm);
+                setTerms(selectedTerm);
 
-    // Clear Due Date for Cash and Bank
-    if (selectedTerm !== "Credit") {
-      setDueDate("");
-    }
-  }}
+                // Clear Due Date for Cash and Bank
+                if (selectedTerm !== "Credit") {
+                  setDueDate("");
+                }
+              }}
               displayField="label"
             />
           </div>
@@ -2250,17 +2249,19 @@ const getBillNo = async () => {
                     <label className="mb-1 block text-xs font-medium text-gray-700 sm:text-sm dark:text-gray-300">
                       Country <span className="text-red-500">*</span>
                     </label>
-                    <Select
-                      options={countryOptions}
-                      styles={customSelectStyles}
-                      classNamePrefix="react-select"
+                    <Combobox
+                      data={countryOptions}
+                      displayField="label"
+                      searchFields={["label"]}
                       placeholder="Search Country"
                       value={
                         countryOptions.find(
-                          (option) => option.value === accountForm.countryCode,
+                          (o) => o.value === accountForm.countryCode,
                         ) || null
                       }
-                      onChange={(selected) => {
+                      onChange={(
+                        selected: { value: string; label: string } | null,
+                      ) => {
                         updateAccountForm("countryCode", selected?.value || "");
                         updateAccountForm("country", selected?.label || "");
                         updateAccountForm("stateCode", "");
@@ -2276,29 +2277,38 @@ const getBillNo = async () => {
                     )}
                   </div>
 
-                  {/* State - Dynamic with react-select */}
+                  {/* State */}
                   <div>
                     <label className="mb-1 block text-xs font-medium text-gray-700 sm:text-sm dark:text-gray-300">
                       State <span className="text-red-500">*</span>
                     </label>
-                    <Select
-                      options={stateOptions}
-                      styles={customSelectStyles}
-                      classNamePrefix="react-select"
-                      placeholder="Search State"
-                      isDisabled={!accountForm.countryCode}
-                      value={
-                        stateOptions.find(
-                          (option) => option.value === accountForm.stateCode,
-                        ) || null
+                    <div
+                      className={
+                        !accountForm.countryCode
+                          ? "pointer-events-none opacity-60"
+                          : ""
                       }
-                      onChange={(selected) => {
-                        updateAccountForm("stateCode", selected?.value || "");
-                        updateAccountForm("state", selected?.label || "");
-                        updateAccountForm("district", "");
-                        updateAccountForm("city", "");
-                      }}
-                    />
+                    >
+                      <Combobox
+                        data={stateOptions}
+                        displayField="label"
+                        searchFields={["label"]}
+                        placeholder="Search State"
+                        value={
+                          stateOptions.find(
+                            (o) => o.value === accountForm.stateCode,
+                          ) || null
+                        }
+                        onChange={(
+                          selected: { value: string; label: string } | null,
+                        ) => {
+                          updateAccountForm("stateCode", selected?.value || "");
+                          updateAccountForm("state", selected?.label || "");
+                          updateAccountForm("district", "");
+                          updateAccountForm("city", "");
+                        }}
+                      />
+                    </div>
                     {getAccountError("stateCode") && (
                       <p className="mt-1 text-xs text-red-500">
                         {getAccountError("stateCode")}
@@ -2306,26 +2316,35 @@ const getBillNo = async () => {
                     )}
                   </div>
 
-                  {/* District - Dynamic with react-select */}
+                  {/* District */}
                   <div>
                     <label className="mb-1 block text-xs font-medium text-gray-700 sm:text-sm dark:text-gray-300">
                       District <span className="text-red-500">*</span>
                     </label>
-                    <Select
-                      options={districtOptions}
-                      styles={customSelectStyles}
-                      classNamePrefix="react-select"
-                      placeholder="Search District"
-                      isDisabled={!accountForm.stateCode}
-                      value={
-                        districtOptions.find(
-                          (option) => option.value === accountForm.district,
-                        ) || null
+                    <div
+                      className={
+                        !accountForm.stateCode
+                          ? "pointer-events-none opacity-60"
+                          : ""
                       }
-                      onChange={(selected) => {
-                        updateAccountForm("district", selected?.value || "");
-                      }}
-                    />
+                    >
+                      <Combobox
+                        data={districtOptions}
+                        displayField="label"
+                        searchFields={["label"]}
+                        placeholder="Search District"
+                        value={
+                          districtOptions.find(
+                            (o) => o.value === accountForm.district,
+                          ) || null
+                        }
+                        onChange={(
+                          selected: { value: string; label: string } | null,
+                        ) =>
+                          updateAccountForm("district", selected?.value || "")
+                        }
+                      />
+                    </div>
                     {getAccountError("district") && (
                       <p className="mt-1 text-xs text-red-500">
                         {getAccountError("district")}
@@ -2333,33 +2352,39 @@ const getBillNo = async () => {
                     )}
                   </div>
 
-                  {/* City - Dynamic with react-select */}
+                  {/* City */}
                   <div>
                     <label className="mb-1 block text-xs font-medium text-gray-700 sm:text-sm dark:text-gray-300">
                       City <span className="text-red-500">*</span>
                     </label>
-                    <Select
-                      options={cityOptions}
-                      styles={customSelectStyles}
-                      classNamePrefix="react-select"
-                      placeholder="Search City"
-                      isDisabled={!accountForm.stateCode}
-                      value={
-                        cityOptions.find(
-                          (option) => option.value === accountForm.city,
-                        ) || null
+                    <div
+                      className={
+                        !accountForm.stateCode
+                          ? "pointer-events-none opacity-60"
+                          : ""
                       }
-                      onChange={(selected) => {
-                        updateAccountForm("city", selected?.value || "");
-                      }}
-                    />
+                    >
+                      <Combobox
+                        data={cityOptions}
+                        displayField="label"
+                        searchFields={["label"]}
+                        placeholder="Search City"
+                        value={
+                          cityOptions.find(
+                            (o) => o.value === accountForm.city,
+                          ) || null
+                        }
+                        onChange={(
+                          selected: { value: string; label: string } | null,
+                        ) => updateAccountForm("city", selected?.value || "")}
+                      />
+                    </div>
                     {getAccountError("city") && (
                       <p className="mt-1 text-xs text-red-500">
                         {getAccountError("city")}
                       </p>
                     )}
                   </div>
-
                   {/* Address */}
                   <div className="sm:col-span-2">
                     <label className="mb-1 block text-xs font-medium text-gray-700 sm:text-sm dark:text-gray-300">
