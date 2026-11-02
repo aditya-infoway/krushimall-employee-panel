@@ -1066,7 +1066,7 @@ function ReviewLeadSummaryStep({
   };
   const fetchAccounts = async () => {
     try {
-      const res = await apiHelper.get("/salesexecutive/account");
+      const res = await apiHelper.get("/salesexecutive/account?scope=all");
 
       const data = Array.isArray(res.data)
         ? res.data
