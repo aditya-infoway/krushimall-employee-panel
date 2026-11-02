@@ -30,7 +30,7 @@ export default function General() {
   const fetchEmployee = async () => {
     try {
       setLoading(true);
-      const response = await apiHelper.get(`/employees/${id}`);
+      const response = await apiHelper.get(`/employees/profile/${id}`);
       setEmployee(response.data);
       setFormData({
         mobileNumber: response.data?.mobileNumber || "",

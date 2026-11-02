@@ -14,7 +14,8 @@ import {
 import { TbCoins, TbUser, TbUsersGroup } from "react-icons/tb";
 import { Link } from "react-router";
 import { useAuthContext } from "@/app/contexts/auth/context";
-
+// imports me add karo
+import { useEffect, useState } from "react";
 // Local Imports
 import { Avatar, AvatarDot, type AvatarProps, Button } from "@/components/ui";
 import apiHelper from "@/utils/apiHelper";
@@ -75,13 +76,26 @@ const links: LinkItem[] = [
 
 export function Profile() {
   const { user, logout } = useAuthContext();
+  const [employee, setEmployee] = useState<any>(user as any);
 
-  // user already comes from AuthContext (login response / sessionStorage authUser)
-  // no extra API call needed here — avoids the blank-popover-on-refresh issue
-  const employee = user as any;
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      try {
+        const id = (user as any)?.id;
+        if (!id) return;
+
+        const response = await apiHelper.get(`/employees/profile/${id}`);
+        setEmployee(response?.data || response);
+      } catch (error) {
+        console.error("Failed to fetch employee:", error);
+      }
+    };
+
+    fetchEmployee();
+  }, [(user as any)?.id]);
 
   const getEmployeeAvatar = () => {
-    if (!employee?.profileImage) return undefined;
+    if (!employee?.profileImage) return "/images/avatar/avatar-12.jpg";
     return apiHelper.getImageUrl(employee.profileImage);
   };
   return (
