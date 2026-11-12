@@ -184,12 +184,14 @@ const Order: React.FC = () => {
 
     const motorNo = data.motorNo ?? data.engineNo ?? "";
 
+    const highlighted = isFocused || isSelected;
+
     return (
       <div
         ref={innerRef}
         {...innerProps}
         className={`cursor-pointer border-b px-3 py-2 text-xs ${
-          isFocused || isSelected
+          highlighted
             ? "bg-primary-600 text-white"
             : "bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
         }`}
@@ -229,7 +231,7 @@ const Order: React.FC = () => {
               </p>
             )}
 
-            {/* Directly show API calculated ageDay */}
+            {/* Days (inward date se calculated) */}
             {data.ageDay !== null && data.ageDay !== undefined && (
               <p>
                 <span className="font-semibold">Days:</span> {data.ageDay}
@@ -351,33 +353,22 @@ const Order: React.FC = () => {
     banker: string;
     status: string;
   };
-const getCompany = () => {
-  const savedCompanyId =
-    localStorage.getItem("companyId") ||
-    localStorage.getItem("companyId");
+  const getCompany = () => {
+    const savedCompanyId =
+      localStorage.getItem("companyId") || localStorage.getItem("companyId");
 
-  const savedFinancialYearId =
-    localStorage.getItem(
-      "financialYearId",
-    ) ||
-    localStorage.getItem(
-      "financialYearId",
-    );
+    const savedFinancialYearId =
+      localStorage.getItem("financialYearId") ||
+      localStorage.getItem("financialYearId");
 
- 
+    if (savedCompanyId) {
+      setCompanyId(Number(savedCompanyId));
+    }
 
-  if (savedCompanyId) {
-    setCompanyId(
-      Number(savedCompanyId),
-    );
-  }
-
-  if (savedFinancialYearId) {
-    setFinancialYearId(
-      Number(savedFinancialYearId),
-    );
-  }
-};
+    if (savedFinancialYearId) {
+      setFinancialYearId(Number(savedFinancialYearId));
+    }
+  };
   const fetchPaymentAccounts = async () => {
     try {
       const response = await apiHelper.get("/teamlead/account?scope=all");
@@ -387,8 +378,6 @@ const getCompany = () => {
         : Array.isArray(response.data)
           ? response.data
           : [];
-
-    
 
       const cashAccounts = accounts
         .filter((item: any) => {
@@ -421,8 +410,6 @@ const getCompany = () => {
       setCashAccountOptions(cashAccounts);
 
       setBankAccountOptions(bankAccounts);
-
-     
     } catch (error) {
       console.error("GET ACCOUNT ERROR:", error);
     }
@@ -448,65 +435,81 @@ const getCompany = () => {
     getBankers();
     fetchPaymentAccounts();
   }, []);
-   const fetchVehicleInventory = async () => {
-  try {
- 
+  // Kaun si status wali vehicles order mein allot ho sakti hain.
+  // Sirf verify hui vehicles chahiye to "transit" hata do.
+  const SELECTABLE_STATUSES = ["present"];
 
-    const res = await apiHelper.get("/teamlead/tractor-inventory");
+  const fetchVehicleInventory = async () => {
+    try {
+      const res = await apiHelper.get("/teamlead/tractor-inventory");
 
-  
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
 
-    const data = Array.isArray(res.data?.data)
-      ? res.data.data
-      : Array.isArray(res.data)
-        ? res.data
-        : [];
+      const mappedVehicles = data
+        // Present + Transit rows (Booked automatically bahar)
+        .filter((item: any) =>
+          SELECTABLE_STATUSES.includes(
+            String(item.status ?? "")
+              .trim()
+              .toLowerCase(),
+          ),
+        )
+        .map((item: any) => {
+          const inwardDate = item.inwardDate ?? item.inWardDate ?? "";
 
-  
+          // API ageDay nahi bhejti, to inward date se nikaal lo
+          const ageDay =
+            item.ageDay ??
+            item.ageday ??
+            (inwardDate
+              ? Math.max(
+                  Math.floor(
+                    (Date.now() - new Date(inwardDate).getTime()) /
+                      (1000 * 60 * 60 * 24),
+                  ),
+                  0,
+                )
+              : null);
 
-    const verifiedVehicles = data.filter(
-      (item: any) =>
-        String(item.status ?? "").trim().toUpperCase() === "VERIFIED",
-    );
+          return {
+            id: String(item.id ?? item.tractorId ?? item.purchaseItemId),
 
-   
+            chassisNo: String(item.chassisNo ?? "").trim(),
 
-    const mappedVehicles = verifiedVehicles
-      .filter(
-        (item: any) =>
-          String(item.status ?? "").trim().toLowerCase() !== "booked",
-      )
-      .map((item: any) => ({
-        id: String(item.id ?? item.tractorId ?? item.purchaseItemId),
+            batteryNo: item.batteryNo ?? "",
 
-        chassisNo: String(item.chassisNo ?? "").trim(),
+            keyNo: item.keyNo ?? item.keyNumber ?? "",
 
-        batteryNo: item.batteryNo ?? "",
+            engineNo: item.engineNo ?? item.motorNo ?? "",
 
-        keyNo: item.keyNo ?? item.keyNumber ?? "",
+            inwardDate,
 
-        engineNo: item.engineNo ?? item.motorNo ?? "",
+            ageDay,
 
-        inwardDate: item.inwardDate ?? item.inWardDate ?? "",
+            model: item.model ?? item.modelName ?? "",
 
-        ageDay: item.ageDay ?? item.ageday ?? null,
+            variant: item.variant ?? item.variantName ?? "",
 
-        model: item.model ?? item.modelName ?? "",
+            colour: item.colour ?? item.color ?? "",
 
-        variant: item.variant ?? item.variantName ?? "",
+            status: item.status ?? "",
+          };
+        })
 
-        colour: item.colour ?? item.color ?? "",
+        .sort((a: any, b: any) => {
+          const rank = (s: string) => (s.toLowerCase() === "present" ? 0 : 1);
+          return rank(a.status) - rank(b.status);
+        });
 
-        status: item.status ?? "",
-      }));
-
-   
-
-    setVehicleOptions(mappedVehicles);
-  } catch (error) {
-    console.error("❌ GET TRACTOR INVENTORY ERROR:", error);
-  }
-};
+      setVehicleOptions(mappedVehicles);
+    } catch (error) {
+      console.error("❌ GET TRACTOR INVENTORY ERROR:", error);
+    }
+  };
   const totalValue = 0;
   const fetchFinances = async () => {
     try {
@@ -530,8 +533,6 @@ const getCompany = () => {
         status: item.status ?? "",
       }));
 
-    
-
       setFinanceOptions(mappedFinances);
     } catch (error) {
       console.error("GET FINANCE ERROR:", error);
@@ -552,10 +553,8 @@ const getCompany = () => {
 
         const response = await apiHelper.get(`/leads/${id}`);
 
-   
-
         const lead = response.data?.data || response.data;
-       setGrandTotal(String(Number(lead?.quotationGrandTotal) || 0));
+        setGrandTotal(String(Number(lead?.quotationGrandTotal) || 0));
         // ==========================================
         // 1. VEHICLE CHARGES
         // ==========================================
@@ -718,8 +717,6 @@ const getCompany = () => {
           assignBy: finance?.assignBy ?? "",
         }));
 
-     
-
         const exchangeDetails =
           lead?.exchangeDetails ?? lead?.financeData ?? lead?.exchange ?? lead;
 
@@ -753,7 +750,6 @@ const getCompany = () => {
               : "",
 
           vehicleNo: exchangeDetails?.vehicleNo ?? "",
-          
         }));
       } catch (error) {
         console.error("GET CREATE ORDER LEAD ERROR:", error);
@@ -822,270 +818,199 @@ const getCompany = () => {
       vehicleColour === leadColour
     );
   });
-// ─── 1) Add a new state near your other useState declarations ───────────────
-// (place this next to `const [payment, setPayment] = useState<PaymentDetails>({...})`)
+  // ─── 1) Add a new state near your other useState declarations ───────────────
+  // (place this next to `const [payment, setPayment] = useState<PaymentDetails>({...})`)
 
+  // ─── 2) Inside the `getLeadDetails` effect, REPLACE this block: ─────────────
+  //
+  //   setPayment((prev) => ({
+  //     ...prev,
+  //     invoiceAmount: String(Number(lead?.quotationGrandTotal) || 0),
+  //   }));
+  //
+  // WITH this: ──────────────────────────────────────────────────────────────
 
-// ─── 2) Inside the `getLeadDetails` effect, REPLACE this block: ─────────────
-//
-//   setPayment((prev) => ({
-//     ...prev,
-//     invoiceAmount: String(Number(lead?.quotationGrandTotal) || 0),
-//   }));
-//
-// WITH this: ──────────────────────────────────────────────────────────────
+  // ─── 3) Replace the payment-calculation useEffect with this: ────────────────
 
-
-
-// ─── 3) Replace the payment-calculation useEffect with this: ────────────────
-
-useEffect(() => {
-  // Company Share + Dealer Share
-  const companyShare = Number(exchange.companyShare) || 0;
-
-  const dealerShare = Number(exchange.dealerShares) || 0;
-
-  // Exchange Discount
-  const exchangeDiscount = companyShare + dealerShare;
-
-  // Raw Quotation Grand Total (never changes here)
-  const total = Number(grandTotal) || 0;
-
-  // Invoice Amount = Total - Exchange Discount
-  const invoiceAmount = Math.max(total - exchangeDiscount, 0);
-
-  setPayment((prev) => ({
-    ...prev,
-
+  useEffect(() => {
     // Company Share + Dealer Share
-    exchangeDiscount: String(exchangeDiscount),
+    const companyShare = Number(exchange.companyShare) || 0;
 
-    // Total = raw Quotation Grand Total
-    total: String(total),
+    const dealerShare = Number(exchange.dealerShares) || 0;
+
+    // Exchange Discount
+    const exchangeDiscount = companyShare + dealerShare;
+
+    // Raw Quotation Grand Total (never changes here)
+    const total = Number(grandTotal) || 0;
 
     // Invoice Amount = Total - Exchange Discount
-    invoiceAmount: String(invoiceAmount),
+    const invoiceAmount = Math.max(total - exchangeDiscount, 0);
 
-    // Received Amount = Exchange Discount
-    receivedAmount: String(exchangeDiscount),
+    setPayment((prev) => ({
+      ...prev,
 
-    // Pending Amount = Invoice Amount
-    pendingAmount: String(invoiceAmount),
-  }));
-}, [exchange.companyShare, exchange.dealerShares, grandTotal]);
+      // Company Share + Dealer Share
+      exchangeDiscount: String(exchangeDiscount),
+
+      // Total = raw Quotation Grand Total
+      total: String(total),
+
+      // Invoice Amount = Total - Exchange Discount
+      invoiceAmount: String(invoiceAmount),
+
+      // Received Amount = Exchange Discount
+      receivedAmount: String(exchangeDiscount),
+
+      // Pending Amount = Invoice Amount
+      pendingAmount: String(invoiceAmount),
+    }));
+  }, [exchange.companyShare, exchange.dealerShares, grandTotal]);
   const handleCreateOrder = async () => {
-  try {
-    // =====================================
-    // BASIC VALIDATION
-    // =====================================
+    try {
+      // =====================================
+      // BASIC VALIDATION
+      // =====================================
 
-    if (!id) {
-      toast.error("Lead ID is missing");
-      return;
-    }
-
-    if (!companyId) {
-      toast.error("Company ID not found");
-      return;
-    }
-
-    if (!financialYearId) {
-      toast.error(
-        "Financial Year ID not found",
-      );
-      return;
-    }
-
-  if (!allotment.chassisNo) {
-  toast.error("Please select chassis number");
-  return;
-}
-
-    // =====================================
-    // PAYMENT AMOUNTS
-    // =====================================
-
-    const marginAmount =
-      Number(
-        hypothecation.marginMoney,
-      ) || 0;
-
-    const cashAmount =
-      Number(
-        hypothecation.cashAmount,
-      ) || 0;
-
-    const bankAmount =
-      Number(
-        hypothecation.bankAmount,
-      ) || 0;
-
-    // =====================================
-    // PAYMENT VALIDATION
-    // =====================================
-
-    if (
-      hypothecation.paymentStatus ===
-      "received"
-    ) {
-      if (
-        cashAmount + bankAmount !==
-        marginAmount
-      ) {
-        toast.error(
-          "Cash Amount + Bank Amount must be equal to Margin Money",
-        );
-
+      if (!id) {
+        toast.error("Lead ID is missing");
         return;
       }
 
-      // Cash Account validation
-      if (
-        cashAmount > 0 &&
-        !hypothecation.cashAccountId
-      ) {
-        toast.error(
-          "Please select Cash Account",
-        );
-
+      if (!companyId) {
+        toast.error("Company ID not found");
         return;
       }
 
-      // Bank Account validation
-      if (
-        bankAmount > 0 &&
-        !hypothecation.bankAccountId
-      ) {
-        toast.error(
-          "Please select Bank Account",
-        );
-
+      if (!financialYearId) {
+        toast.error("Financial Year ID not found");
         return;
       }
 
-      // Payment Mode validation
-      if (
-        bankAmount > 0 &&
-        !hypothecation.paymentMode
-      ) {
-        toast.error(
-          "Please select Payment Mode",
-        );
-
+      if (!allotment.chassisNo) {
+        toast.error("Please select chassis number");
         return;
       }
 
-      // Cheque validation
-      if (
-        bankAmount > 0 &&
-        hypothecation.paymentMode ===
-          "CHEQUE"
-      ) {
-        if (
-          !hypothecation.chequeNo
-        ) {
+      // =====================================
+      // PAYMENT AMOUNTS
+      // =====================================
+
+      const marginAmount = Number(hypothecation.marginMoney) || 0;
+
+      const cashAmount = Number(hypothecation.cashAmount) || 0;
+
+      const bankAmount = Number(hypothecation.bankAmount) || 0;
+
+      // =====================================
+      // PAYMENT VALIDATION
+      // =====================================
+
+      if (hypothecation.paymentStatus === "received") {
+        if (cashAmount + bankAmount !== marginAmount) {
           toast.error(
-            "Please enter Cheque Number",
+            "Cash Amount + Bank Amount must be equal to Margin Money",
           );
 
           return;
         }
 
-        if (
-          !hypothecation.chequeDate
-        ) {
-          toast.error(
-            "Please select Cheque Date",
-          );
+        // Cash Account validation
+        if (cashAmount > 0 && !hypothecation.cashAccountId) {
+          toast.error("Please select Cash Account");
 
           return;
         }
+
+        // Bank Account validation
+        if (bankAmount > 0 && !hypothecation.bankAccountId) {
+          toast.error("Please select Bank Account");
+
+          return;
+        }
+
+        // Payment Mode validation
+        if (bankAmount > 0 && !hypothecation.paymentMode) {
+          toast.error("Please select Payment Mode");
+
+          return;
+        }
+
+        // Cheque validation
+        if (bankAmount > 0 && hypothecation.paymentMode === "CHEQUE") {
+          if (!hypothecation.chequeNo) {
+            toast.error("Please enter Cheque Number");
+
+            return;
+          }
+
+          if (!hypothecation.chequeDate) {
+            toast.error("Please select Cheque Date");
+
+            return;
+          }
+        }
       }
+
+      // Start loading only after
+      // all validations are successful
+      setLoading(true);
+
+      // =====================================
+      // CREATE PAYLOAD
+      // =====================================
+
+      const payload = {
+        companyId: Number(companyId),
+
+        financialYearId: Number(financialYearId),
+
+        leadId: Number(id),
+
+        vehicleCharges,
+
+        allotment,
+
+        hypothecation: {
+          ...hypothecation,
+
+          cashAmount: String(cashAmount),
+
+          bankAmount: String(bankAmount),
+        },
+
+        exchange,
+
+        payment,
+
+        broker,
+
+        delivery,
+      };
+
+      // =====================================
+      // CREATE ORDER API
+      // =====================================
+
+      const response = await apiHelper.post("/salesexecutive/order", payload);
+
+      // Success toaster
+      toast.success(response.data?.message || "Order created successfully");
+
+      // Give toaster some time
+      // before changing the page
+      setTimeout(() => {
+        navigate(-1);
+      }, 800);
+    } catch (error: any) {
+      console.error("CREATE ORDER ERROR:", error);
+
+      // Backend error toaster
+      toast.error(error.response?.data?.message || "Unable to create order");
+    } finally {
+      setLoading(false);
     }
-
-    // Start loading only after
-    // all validations are successful
-    setLoading(true);
-
-    // =====================================
-    // CREATE PAYLOAD
-    // =====================================
-
-    const payload = {
-      companyId:
-        Number(companyId),
-
-      financialYearId:
-        Number(
-          financialYearId,
-        ),
-
-      leadId:
-        Number(id),
-
-      vehicleCharges,
-
-      allotment,
-
-      hypothecation: {
-        ...hypothecation,
-
-        cashAmount:
-          String(cashAmount),
-
-        bankAmount:
-          String(bankAmount),
-      },
-
-      exchange,
-
-      payment,
-
-      broker,
-
-      delivery,
-    };
-
-  
-
-    // =====================================
-    // CREATE ORDER API
-    // =====================================
-
-   const response = await apiHelper.post(
-  "/salesexecutive/order",
-  payload,
-);
-
-   
-
-    // Success toaster
-    toast.success(
-      response.data?.message ||
-        "Order created successfully",
-    );
-
-    // Give toaster some time
-    // before changing the page
-    setTimeout(() => {
-      navigate(-1);
-    }, 800);
-  } catch (error: any) {
-    console.error(
-      "CREATE ORDER ERROR:",
-      error,
-    );
-
-    // Backend error toaster
-    toast.error(
-      error.response?.data
-        ?.message ||
-        "Unable to create order",
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+  };
   return (
     <div className="dark:bg-dark-900 min-h-screen bg-gray-50 p-4">
       {/* Title row */}

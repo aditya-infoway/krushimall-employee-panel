@@ -548,7 +548,7 @@ const AccessoriesPurchaseBill: React.FC<AccessoriesPurchaseBillProps> = ({
     try {
       const res = await apiHelper.get("/accessories");
 
-      console.log("Accessories API:", res);
+
 
       setAccessories(
         Array.isArray(res.data?.data)

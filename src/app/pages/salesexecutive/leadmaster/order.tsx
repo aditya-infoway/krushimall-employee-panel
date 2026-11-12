@@ -175,76 +175,77 @@ const Order: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedAccessories, setSelectedAccessories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const OrderVehicleOption = (props: any) => {
-    const { data, innerRef, innerProps, isFocused, isSelected } = props;
+const OrderVehicleOption = (props: any) => {
+  const { data, innerRef, innerProps, isFocused, isSelected } = props;
 
-    const inwardDate = data.inwardDate ?? data.inWardDate ?? "";
+  const inwardDate = data.inwardDate ?? data.inWardDate ?? "";
 
-    const motorNo = data.motorNo ?? data.engineNo ?? "";
+  const motorNo = data.motorNo ?? data.engineNo ?? "";
 
-    return (
-      <div
-        ref={innerRef}
-        {...innerProps}
-        className={`cursor-pointer border-b px-3 py-2 text-xs ${
-          isFocused || isSelected
-            ? "bg-primary-600 text-white"
-            : "bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
-        }`}
-      >
-        <div className="flex items-start justify-between gap-4">
-          {/* LEFT SIDE */}
-          <div className="space-y-0.5">
-            {/* Chassis No always show */}
+  const highlighted = isFocused || isSelected;
+
+  return (
+    <div
+      ref={innerRef}
+      {...innerProps}
+      className={`cursor-pointer border-b px-3 py-2 text-xs ${
+        highlighted
+          ? "bg-primary-600 text-white"
+          : "bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-4">
+        {/* LEFT SIDE */}
+        <div className="space-y-0.5">
+          {/* Chassis No always show */}
+          <p>
+            <span className="font-semibold">Chassis No:</span> {data.chassisNo}
+          </p>
+
+          {/* Show only if available */}
+          {data.batteryNo && (
             <p>
-              <span className="font-semibold">Chassis No:</span>{" "}
-              {data.chassisNo}
+              <span className="font-semibold">Battery No:</span>{" "}
+              {data.batteryNo}
             </p>
+          )}
 
-            {/* Show only if available */}
-            {data.batteryNo && (
-              <p>
-                <span className="font-semibold">Battery No:</span>{" "}
-                {data.batteryNo}
-              </p>
-            )}
+          {/* Show only if available */}
+          {data.keyNo && (
+            <p>
+              <span className="font-semibold">Key No:</span> {data.keyNo}
+            </p>
+          )}
+        </div>
 
-            {/* Show only if available */}
-            {data.keyNo && (
-              <p>
-                <span className="font-semibold">Key No:</span> {data.keyNo}
-              </p>
-            )}
-          </div>
+        {/* RIGHT SIDE */}
+        <div className="space-y-0.5 text-right">
+          {/* Show only if available */}
+          {inwardDate && (
+            <p>
+              <span className="font-semibold">Inward Date:</span>{" "}
+              {new Date(inwardDate).toLocaleDateString("en-GB")}
+            </p>
+          )}
 
-          {/* RIGHT SIDE */}
-          <div className="space-y-0.5 text-right">
-            {/* Show only if available */}
-            {inwardDate && (
-              <p>
-                <span className="font-semibold">Inward Date:</span>{" "}
-                {new Date(inwardDate).toLocaleDateString("en-GB")}
-              </p>
-            )}
+          {/* Days (inward date se calculated) */}
+          {data.ageDay !== null && data.ageDay !== undefined && (
+            <p>
+              <span className="font-semibold">Days:</span> {data.ageDay}
+            </p>
+          )}
 
-            {/* Directly show API calculated ageDay */}
-            {data.ageDay !== null && data.ageDay !== undefined && (
-              <p>
-                <span className="font-semibold">Days:</span> {data.ageDay}
-              </p>
-            )}
-
-            {/* Show only if available */}
-            {motorNo && (
-              <p>
-                <span className="font-semibold">Motor No:</span> {motorNo}
-              </p>
-            )}
-          </div>
+          {/* Show only if available */}
+          {motorNo && (
+            <p>
+              <span className="font-semibold">Motor No:</span> {motorNo}
+            </p>
+          )}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
   const [vehicleCharges, setVehicleCharges] = useState<VehicleCharges>({
     exShowroomPrice: "",
     insurance: "",
@@ -437,13 +438,13 @@ const Order: React.FC = () => {
     getBankers();
     fetchPaymentAccounts();
   }, []);
-   const fetchVehicleInventory = async () => {
+// Kaun si status wali vehicles order mein allot ho sakti hain.
+// Sirf verify hui vehicles chahiye to "transit" hata do.
+const SELECTABLE_STATUSES = ["present"];
+
+const fetchVehicleInventory = async () => {
   try {
- 
-
     const res = await apiHelper.get("/salesexecutive/tractor-inventory");
-
-  
 
     const data = Array.isArray(res.data?.data)
       ? res.data.data
@@ -451,45 +452,61 @@ const Order: React.FC = () => {
         ? res.data
         : [];
 
-  
-
-    const verifiedVehicles = data.filter(
-      (item: any) =>
-        String(item.status ?? "").trim().toUpperCase() === "VERIFIED",
-    );
-
-   
-
-    const mappedVehicles = verifiedVehicles
-      .filter(
-        (item: any) =>
-          String(item.status ?? "").trim().toLowerCase() !== "booked",
+    const mappedVehicles = data
+      // Present + Transit rows (Booked automatically bahar)
+      .filter((item: any) =>
+        SELECTABLE_STATUSES.includes(
+          String(item.status ?? "")
+            .trim()
+            .toLowerCase(),
+        ),
       )
-      .map((item: any) => ({
-        id: String(item.id ?? item.tractorId ?? item.purchaseItemId),
+      .map((item: any) => {
+        const inwardDate = item.inwardDate ?? item.inWardDate ?? "";
 
-        chassisNo: String(item.chassisNo ?? "").trim(),
+        // API ageDay nahi bhejti, to inward date se nikaal lo
+        const ageDay =
+          item.ageDay ??
+          item.ageday ??
+          (inwardDate
+            ? Math.max(
+                Math.floor(
+                  (Date.now() - new Date(inwardDate).getTime()) /
+                    (1000 * 60 * 60 * 24),
+                ),
+                0,
+              )
+            : null);
 
-        batteryNo: item.batteryNo ?? "",
+        return {
+          id: String(item.id ?? item.tractorId ?? item.purchaseItemId),
 
-        keyNo: item.keyNo ?? item.keyNumber ?? "",
+          chassisNo: String(item.chassisNo ?? "").trim(),
 
-        engineNo: item.engineNo ?? item.motorNo ?? "",
+          batteryNo: item.batteryNo ?? "",
 
-        inwardDate: item.inwardDate ?? item.inWardDate ?? "",
+          keyNo: item.keyNo ?? item.keyNumber ?? "",
 
-        ageDay: item.ageDay ?? item.ageday ?? null,
+          engineNo: item.engineNo ?? item.motorNo ?? "",
 
-        model: item.model ?? item.modelName ?? "",
+          inwardDate,
 
-        variant: item.variant ?? item.variantName ?? "",
+          ageDay,
 
-        colour: item.colour ?? item.color ?? "",
+          model: item.model ?? item.modelName ?? "",
 
-        status: item.status ?? "",
-      }));
+          variant: item.variant ?? item.variantName ?? "",
 
-   
+          colour: item.colour ?? item.color ?? "",
+
+          status: item.status ?? "",
+        };
+      })
+  
+      .sort((a: any, b: any) => {
+        const rank = (s: string) => (s.toLowerCase() === "present" ? 0 : 1);
+        return rank(a.status) - rank(b.status);
+      });
 
     setVehicleOptions(mappedVehicles);
   } catch (error) {
@@ -1217,10 +1234,10 @@ const Order: React.FC = () => {
                   Chassis No
                 </label>
 
-                <Select
-                 options={vehicleOptions}
+                 <Select
+                  options={vehicleOptions}
                   value={
-                    matchingVehicleOptions.find(
+                    vehicleOptions.find(
                       (vehicle: any) =>
                         String(vehicle.chassisNo) ===
                         String(allotment.chassisNo),
@@ -1236,7 +1253,6 @@ const Order: React.FC = () => {
                   onChange={(vehicle: any) => {
                     setAllotment((prev) => ({
                       ...prev,
-
                       chassisNo: vehicle?.chassisNo ?? "",
                     }));
                   }}
@@ -1251,12 +1267,10 @@ const Order: React.FC = () => {
                       ...base,
                       zIndex: 99999,
                     }),
-
                     menu: (base: any) => ({
                       ...base,
                       overflow: "hidden",
                     }),
-
                     menuList: (base: any) => ({
                       ...base,
                       maxHeight: "300px",
