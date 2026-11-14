@@ -3,9 +3,14 @@ import { useEffect, useReducer, ReactNode } from "react";
 
 // Local Imports
 import apiHelper from "@/utils/apiHelper";
-import { isTokenValid, setSession, storage, EMPLOYEE_TOKEN_KEY } from "@/utils/jwt";
+import {
+  isTokenValid,
+  setSession,
+  storage,
+  EMPLOYEE_TOKEN_KEY,
+} from "@/utils/jwt";
+import { redirectToAdminLogin } from "@/utils/redirectToAdminLogin";
 import { AuthProvider as AuthContext, AuthContextType } from "./context";
-import { User } from "@/@types/user";
 
 // ----------------------------------------------------------------------
 
@@ -82,13 +87,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const init = async () => {
       try {
-        // ✅ same key jo setSession() use karta hai (jwt.ts)
+        // same key jo setSession() use karta hai (jwt.ts)
         const authToken = storage.getItem(EMPLOYEE_TOKEN_KEY);
 
         if (authToken && isTokenValid(authToken)) {
           setSession(authToken);
 
-          // 👇 user ko bhi storage se wapas nikalo
           const savedUser = storage.getItem("authUser");
           const user = savedUser ? JSON.parse(savedUser) : null;
 
@@ -96,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             type: "INITIALIZE",
             payload: {
               isAuthenticated: true,
-              user, // ab null nahi rahega
+              user,
             },
           });
         } else {
@@ -134,7 +138,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setSession(token);
       storage.setItem("authUser", JSON.stringify(user));
-      // Save complete user/branch
 
       dispatch({
         type: "LOGIN_SUCCESS",
@@ -145,7 +148,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       const msg =
         err?.response?.data?.message || err?.message || JSON.stringify(err);
-      alert("Error: " + msg + "\nURL: " + err?.config?.url);
       dispatch({
         type: "LOGIN_ERROR",
         payload: {
@@ -163,6 +165,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("financialYearId");
 
     dispatch({ type: "LOGOUT" });
+
+    // Admin app ke login page par bhejo (full reload)
+    redirectToAdminLogin();
   };
 
   if (!children) {
