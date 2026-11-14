@@ -532,7 +532,7 @@ const AccessoriesPurchaseBill: React.FC<AccessoriesPurchaseBillProps> = ({
     try {
       const res = await apiHelper.get("/storemanager/accessories");
 
-      console.log("Accessories API:", res);
+
 
       setAccessories(
         Array.isArray(res.data?.data)
