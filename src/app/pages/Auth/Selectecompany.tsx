@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import Logo from "@/assets/appLogo.svg?react";
+// import Logo from "@/assets/appLogo.svg?react";
 import Select from "react-select";
 import { Country, State, City } from "country-state-city";
 import { Input } from "@/components/ui";
 import axios from "@/utils/axios";
 import { useAuthContext } from "@/app/contexts/auth/context";
-
+import logo from "@/assets/logo.png";            // ✅ add karo
 interface Company {
   id: number;
   companyName: string;
@@ -317,9 +317,14 @@ export default function Selectcomapny() {
       {/* Left Side */}
       <div className="dark:bg-dark-700 flex w-full flex-col bg-white p-8 xl:w-1/2">
         {/* Logo */}
-        <div className="mb-8 flex justify-center">
-          <Logo className="mx-auto size-16" />
-        </div>
+       {/* Logo */}
+<div className="mb-6 flex justify-center pt-10">
+  <img
+    src={logo}
+    alt="KrushiMall"
+    className="h-20 w-auto object-contain"
+  />
+</div>
 
         {/* Heading */}
         <div className="mb-5 flex items-center gap-3">

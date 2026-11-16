@@ -6,6 +6,7 @@ import { purchase } from "./purchase";
 // import { settings } from "./settings";
 import { usermaster } from "./usermaster";
 import { ledgerreport } from "./ledgerreport";
+import { logout } from "./logout";
 export const accountantNavigation = [
   dashboards,
    usermaster,
@@ -14,7 +15,7 @@ export const accountantNavigation = [
   bookregister,
   ledgerreport,
   bookingbalance,
-  
+  logout
 
  
 ];

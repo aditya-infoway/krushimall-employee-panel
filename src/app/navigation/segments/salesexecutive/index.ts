@@ -7,6 +7,7 @@ import { bookingbalance } from "./bookingbalance";
 // import { settings } from "./settings";
 import { usermaster } from "./usermaster";
 import { goodcontrol } from "./goodscontrol";
+import { logout } from "./logout";
 export const salesExecutiveNavigation = [
   dashboards,
    usermaster,
@@ -17,5 +18,6 @@ export const salesExecutiveNavigation = [
 //   enquirysettings,
 //   settings,
  
-  goodcontrol
+  goodcontrol,
+  logout
 ];
