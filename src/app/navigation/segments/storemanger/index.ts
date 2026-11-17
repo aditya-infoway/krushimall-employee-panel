@@ -10,13 +10,14 @@ import { goodcontrol } from "./goodscontrol";
 import { item } from "./item";
 import { purchase } from "./purchase";
 import { allot } from "./allot";
+import { logout } from "./logout";
 export const storemanagerNavigation = [
   dashboards,
   item,
    purchase,
  allot,
    goodcontrol,
-  
+  logout
   //  usermaster,
   // leadmaster,
 //   followups,

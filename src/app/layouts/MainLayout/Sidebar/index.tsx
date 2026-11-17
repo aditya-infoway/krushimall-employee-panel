@@ -5,11 +5,12 @@ import { useLocation } from "react-router";
 // Local Imports
 import { useBreakpointsContext } from "@/app/contexts/breakpoint/context";
 import { useSidebarContext } from "@/app/contexts/sidebar/context";
-import { useNavigation  } from "@/app/navigation";
+import { useNavigation } from "@/app/navigation";
 import { useDidUpdate } from "@/hooks";
 import { isRouteActive } from "@/utils/isRouteActive";
 import { MainPanel } from "./MainPanel";
 import { PrimePanel } from "./PrimePanel";
+import { settings } from "@/app/navigation/segments/salesexecutive/settings";
 
 // ----------------------------------------------------------------------
 
@@ -22,8 +23,12 @@ export function Sidebar() {
 
   const navigation = useNavigation();
 
+  // settings rail me nahi dikhta, par uska panel chahiye (sab roles ke liye)
+  const allSegments = useMemo(() => [...navigation, settings], [navigation]);
+
   const initialSegment = useMemo(
-    () => navigation.find((item) => isRouteActive(item.path, pathname)),
+    () => allSegments.find((item) => isRouteActive(item.path, pathname)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
@@ -32,11 +37,11 @@ export function Sidebar() {
   );
 
   const currentSegment = useMemo(() => {
-    return navigation.find((item) => item.path === activeSegmentPath);
-  }, [activeSegmentPath]);
+    return allSegments.find((item) => item.path === activeSegmentPath);
+  }, [allSegments, activeSegmentPath]);
 
   useDidUpdate(() => {
-    const activePath = navigation.find((item) =>
+    const activePath = allSegments.find((item) =>
       isRouteActive(item.path, pathname),
     )?.path;
 
